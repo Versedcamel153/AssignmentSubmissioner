@@ -1,0 +1,35 @@
+bool inputReceived = false;
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println("Hello, enter your index number:");
+}
+
+void loop() {
+  static inat indexNumber;
+  static int iter;
+
+  if (Serial.available() && !inputReceived) {
+    indexNumber = Serial.parseInt();
+
+    Serial.println("Enter the number of times to display your index number:");
+    // Wait until user sends this second input
+    while (Serial.available() == 0) {
+      // wait for user input
+    }
+
+    iter = Serial.parseInt();
+
+    Serial.print("Displaying index number ");
+    Serial.print(iter);
+    Serial.println(" times:");
+
+    for (int i = 0; i < iter; i++) {
+      Serial.println(indexNumber);
+    }
+
+    inputReceived = true; // Prevents re-running without reset
+    Serial.println("Done. Reset the board to run again.");
+  }
+}
+

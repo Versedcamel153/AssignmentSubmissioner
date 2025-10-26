@@ -1,0 +1,36 @@
+<div>
+    <p class="text-center font-semibold text-2xl"> {{ submission.title.upper }}</p>
+    <p class="text-xl font-semibold">Details:</p>
+    {% if submission.note %}
+    <p><strong>Submission Note: </strong> {{ submission.note }}</p>
+    {% endif %}
+    <p><strong>Required file format:</strong> {{ submission.format }}</p>
+
+</div>
+<blockquote class="py-4 pl-2 mt-2 bg-green-50 border-green-500 border-l-3">
+    {% if submission.has_submitted %}
+    <p class="text-green-500 font-semibold">
+        You've already submitted a file:
+        <a href="{{ existing_file }}" target="_blank" class="text-blue-600 underline">View
+            submission</a>
+    </p>
+    {% endif %}
+    <p>Note: The file will be automatically renamed in the format
+        <strong>24254XXXXX_BCE_Group_B</strong>
+    </p>
+</blockquote>
+<form id="sub-form-{{ submission.id }}" hx-post="{% url 'submission' submission.id %}"
+    hx-target="#submission-container-{{ submission.id }}" hx-swap="outerHTML" hx-trigger="submit"
+    hx-indicator="#spinner-{{ submission.id }}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div id="form-wrapper-{{ submission.id }}">
+        <!-- Form content -->
+        <fieldset class="fieldset">
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend">Pick a file</legend>
+                <input type="file" name="file" class="file-input" required />
+                <label class="label">Max size 2MB</label>
+            </fieldset>
+    </div>
+
+</form>

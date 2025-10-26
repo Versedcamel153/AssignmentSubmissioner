@@ -1,0 +1,506 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <title>Assignment Manager - Django & TailwindCSS</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="Modern assignment management system for instructors and students">
+    {% tailwind_css %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.24/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://unpkg.com/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    
+    <!-- Navigation Header -->
+    <nav class="navbar bg-white shadow-lg border-b border-gray-200">
+        <div class="navbar-start">
+            <div class="dropdown">
+                <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"></path>
+                    </svg>
+                </div>
+                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                    <li><a href="#" class="flex items-center gap-2"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="#" class="flex items-center gap-2"><i class="fas fa-tasks"></i> Assignments</a></li>
+                    <li><a href="#" class="flex items-center gap-2"><i class="fas fa-users"></i> Students</a></li>
+                    <li><a href="#" class="flex items-center gap-2"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+                </ul>
+            </div>
+            <a class="btn btn-ghost text-xl font-bold text-indigo-600">
+                <i class="fas fa-graduation-cap mr-2"></i>
+                AssignmentHub
+            </a>
+        </div>
+        
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1">
+                <li><a href="#" class="flex items-center gap-2 hover:text-indigo-600"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#" class="flex items-center gap-2 hover:text-indigo-600"><i class="fas fa-tasks"></i> Assignments</a></li>
+                <li><a href="#" class="flex items-center gap-2 hover:text-indigo-600"><i class="fas fa-users"></i> Students</a></li>
+                <li><a href="#" class="flex items-center gap-2 hover:text-indigo-600"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+            </ul>
+        </div>
+        
+        <div class="navbar-end">
+            <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                    <div class="w-10 rounded-full bg-indigo-500 flex items-center justify-center">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                </div>
+                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                    <li><a class="justify-between">Profile <span class="badge">New</span></a></li>
+                    <li><a>Settings</a></li>
+                    <li><a>Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto px-4 py-8">
+        
+        <!-- Welcome Section -->
+        <div class="hero bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl mb-8 shadow-xl">
+            <div class="hero-content text-center py-12">
+                <div class="max-w-md">
+                    <h1 class="text-4xl font-bold mb-4">Welcome Back, Professor!</h1>
+                    <p class="text-lg opacity-90 mb-6">Manage your assignments and track student progress with ease.</p>
+                    <button class="btn btn-primary btn-lg bg-white text-indigo-600 hover:bg-gray-100 border-none" 
+                            onclick="create_assignment_modal.showModal()">
+                        <i class="fas fa-plus mr-2"></i>
+                        Create New Assignment
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Assignments -->
+            <div class="card bg-white shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
+                <div class="card-body">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 font-medium">Total Assignments</p>
+                            <p class="text-3xl font-bold text-gray-800">24</p>
+                        </div>
+                        <div class="p-3 bg-blue-100 rounded-full">
+                            <i class="fas fa-tasks text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center mt-2">
+                        <span class="text-green-600 text-sm font-medium">+12% from last month</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Assignments -->
+            <div class="card bg-white shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
+                <div class="card-body">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 font-medium">Active Assignments</p>
+                            <p class="text-3xl font-bold text-gray-800">8</p>
+                        </div>
+                        <div class="p-3 bg-green-100 rounded-full">
+                            <i class="fas fa-play-circle text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center mt-2">
+                        <span class="text-blue-600 text-sm font-medium">3 due this week</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Submissions -->
+            <div class="card bg-white shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
+                <div class="card-body">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 font-medium">Total Submissions</p>
+                            <p class="text-3xl font-bold text-gray-800">156</p>
+                        </div>
+                        <div class="p-3 bg-purple-100 rounded-full">
+                            <i class="fas fa-paper-plane text-purple-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center mt-2">
+                        <span class="text-green-600 text-sm font-medium">+8% from last week</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Average Grade -->
+            <div class="card bg-white shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
+                <div class="card-body">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 font-medium">Average Grade</p>
+                            <p class="text-3xl font-bold text-gray-800">87%</p>
+                        </div>
+                        <div class="p-3 bg-yellow-100 rounded-full">
+                            <i class="fas fa-star text-yellow-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center mt-2">
+                        <span class="text-green-600 text-sm font-medium">+2.3% improvement</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Assignments Section -->
+        <div class="card bg-white shadow-xl border border-gray-100 mb-8">
+            <div class="card-body">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Recent Assignments</h2>
+                    <div class="flex gap-2">
+                        <div class="form-control">
+                            <input type="text" placeholder="Search assignments..." class="input input-bordered w-64" />
+                        </div>
+                        <button class="btn btn-primary" onclick="create_assignment_modal.showModal()">
+                            <i class="fas fa-plus mr-2"></i>
+                            New Assignment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Assignment Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Assignment Card 1 -->
+                    <div class="card bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 hover:shadow-lg transition-all duration-300">
+                        <div class="card-body">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="badge badge-success">Active</div>
+                                <div class="dropdown dropdown-end">
+                                    <div tabindex="0" role="button" class="btn btn-ghost btn-xs">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </div>
+                                    <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow">
+                                        <li><a><i class="fas fa-edit"></i> Edit</a></li>
+                                        <li><a><i class="fas fa-eye"></i> View</a></li>
+                                        <li><a><i class="fas fa-trash"></i> Delete</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Final Project Report</h3>
+                            <p class="text-sm text-gray-600 mb-3">Computer Science - CS101</p>
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2 text-sm text-gray-600">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>Due: Dec 15, 2024</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-600">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span>PDF</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-users text-blue-600"></i>
+                                    <span class="text-sm font-medium">23 submissions</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="btn btn-sm btn-primary">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-ghost">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Assignment Card 2 -->
+                    <div class="card bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 hover:shadow-lg transition-all duration-300">
+                        <div class="card-body">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="badge badge-warning">Pending</div>
+                                <div class="dropdown dropdown-end">
+                                    <div tabindex="0" role="button" class="btn btn-ghost btn-xs">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </div>
+                                    <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow">
+                                        <li><a><i class="fas fa-edit"></i> Edit</a></li>
+                                        <li><a><i class="fas fa-eye"></i> View</a></li>
+                                        <li><a><i class="fas fa-trash"></i> Delete</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Midterm Exam</h3>
+                            <p class="text-sm text-gray-600 mb-3">Mathematics - MATH201</p>
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2 text-sm text-gray-600">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>Due: Dec 20, 2024</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-600">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span>DOC</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-users text-green-600"></i>
+                                    <span class="text-sm font-medium">12 submissions</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="btn btn-sm btn-primary">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-ghost">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Assignment Card 3 -->
+                    <div class="card bg-gradient-to-br from-purple-50 to-violet-50 border border-purple-100 hover:shadow-lg transition-all duration-300">
+                        <div class="card-body">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="badge badge-error">Overdue</div>
+                                <div class="dropdown dropdown-end">
+                                    <div tabindex="0" role="button" class="btn btn-ghost btn-xs">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </div>
+                                    <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow">
+                                        <li><a><i class="fas fa-edit"></i> Edit</a></li>
+                                        <li><a><i class="fas fa-eye"></i> View</a></li>
+                                        <li><a><i class="fas fa-trash"></i> Delete</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Lab Report #3</h3>
+                            <p class="text-sm text-gray-600 mb-3">Physics - PHY101</p>
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2 text-sm text-gray-600">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>Due: Dec 10, 2024</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-600">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span>PDF</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-users text-purple-600"></i>
+                                    <span class="text-sm font-medium">8 submissions</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="btn btn-sm btn-primary">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-ghost">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Recent Activity -->
+            <div class="card bg-white shadow-xl border border-gray-100">
+                <div class="card-body">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Recent Activity</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium">New submission received</p>
+                                <p class="text-sm text-gray-600">John Doe submitted Final Project Report</p>
+                                <p class="text-xs text-gray-500">2 minutes ago</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-plus text-blue-600"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium">Assignment created</p>
+                                <p class="text-sm text-gray-600">Lab Report #4 for Physics PHY101</p>
+                                <p class="text-xs text-gray-500">1 hour ago</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-clock text-yellow-600"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium">Deadline approaching</p>
+                                <p class="text-sm text-gray-600">Midterm Exam due in 3 days</p>
+                                <p class="text-xs text-gray-500">3 hours ago</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card bg-white shadow-xl border border-gray-100">
+                <div class="card-body">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Quick Stats</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Assignments this week</span>
+                            <span class="font-bold text-lg">5</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Pending reviews</span>
+                            <span class="font-bold text-lg text-orange-600">12</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Completed assignments</span>
+                            <span class="font-bold text-lg text-green-600">18</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Total students</span>
+                            <span class="font-bold text-lg">145</span>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full" style="width: 78%"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">78% assignments completed this semester</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Create Assignment Modal -->
+    <dialog id="create_assignment_modal" class="modal">
+        <div class="modal-box max-w-2xl">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Create New Assignment</h3>
+            
+            <form class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-medium">Assignment Title</span>
+                        </label>
+                        <input type="text" placeholder="Enter assignment title" class="input input-bordered w-full" required />
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-medium">Course</span>
+                        </label>
+                        <select class="select select-bordered w-full">
+                            <option disabled selected>Select course</option>
+                            <option>Computer Science - CS101</option>
+                            <option>Mathematics - MATH201</option>
+                            <option>Physics - PHY101</option>
+                            <option>Chemistry - CHEM101</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-medium">Due Date</span>
+                        </label>
+                        <input type="date" class="input input-bordered w-full" required />
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-medium">File Format</span>
+                        </label>
+                        <select class="select select-bordered w-full">
+                            <option disabled selected>Select format</option>
+                            <option>PDF</option>
+                            <option>DOC/DOCX</option>
+                            <option>TXT</option>
+                            <option>ZIP</option>
+                            <option>Any</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-medium">Instructions</span>
+                    </label>
+                    <textarea class="textarea textarea-bordered h-32" placeholder="Enter assignment instructions and requirements..."></textarea>
+                </div>
+                
+                <div class="form-control">
+                    <label class="label cursor-pointer">
+                        <span class="label-text font-medium">Assignment Settings</span>
+                    </label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="label cursor-pointer">
+                            <span class="label-text">Allow late submissions</span>
+                            <input type="checkbox" class="checkbox checkbox-primary" />
+                        </label>
+                        <label class="label cursor-pointer">
+                            <span class="label-text">Email notifications</span>
+                            <input type="checkbox" class="checkbox checkbox-primary" checked />
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="modal-action">
+                    <button type="button" class="btn btn-ghost" onclick="create_assignment_modal.close()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus mr-2"></i>
+                        Create Assignment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-16">
+        <div class="container mx-auto px-4 py-8">
+            <div class="text-center text-gray-600">
+                <p>&copy; 2024 AssignmentHub. Built with Django, TailwindCSS & DaisyUI.</p>
+                <p class="mt-2">Modern assignment management for modern educators.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Add some interactive functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme toggle could go here
+            
+            // Form submission handling
+            const createForm = document.querySelector('#create_assignment_modal form');
+            if (createForm) {
+                createForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    // Add your form submission logic here
+                    alert('Assignment created successfully!');
+                    document.getElementById('create_assignment_modal').close();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

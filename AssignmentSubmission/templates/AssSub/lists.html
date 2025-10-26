@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <td>
+                    Index number
+                </td>
+                <td>
+                    Name
+                </td>
+                <td>
+                    Status
+                </td>
+                <td>
+                    Verified
+                </td>
+                <td>
+                    Course
+                </td>
+                <td>
+                    Code
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+                <tr>
+                    <td>
+                        {{ course.name}}
+                    </td>
+                    <td>
+                        {{ course.code}}
+                    </td>
+                </tr>
+            {% endfor %}
+            {% for student in students %}
+            <tr>
+                <td>
+                    {{ student.student_id }}
+                </td>
+                <td>
+                    {{ student.name }}
+                </td>
+                <td>
+                    {{ student.is_registered }}
+                </td>
+                <td>
+                    {{ student.is_verified }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,529 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Assignment Dashboard - Modern Design</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% tailwind_css %}
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Mobile menu button -->
+                <div class="flex items-center">
+                    <div class="dropdown dropdown-hover">
+                        <div tabindex="0" role="button" class="btn btn-ghost btn-sm">
+                            <i class="fas fa-bars text-slate-600"></i>
+                        </div>
+                        <ul tabindex="0" class="dropdown-content menu bg-white rounded-lg shadow-lg z-[1] w-52 p-2 mt-3">
+                            <li><a href="#" class="text-slate-700 hover:text-blue-600"><i class="fas fa-home mr-2"></i>Homepage</a></li>
+                            <li><a href="#" class="text-slate-700 hover:text-blue-600"><i class="fas fa-folder mr-2"></i>Portfolio</a></li>
+                            <li><a href="#" class="text-slate-700 hover:text-blue-600"><i class="fas fa-user mr-2"></i>About</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Assignment Hub
+                    </h1>
+                </div>
+
+                <!-- Right side actions -->
+                <div class="flex items-center space-x-3">
+                    <button class="btn btn-ghost btn-sm hover:bg-slate-100">
+                        <i class="fas fa-search text-slate-500"></i>
+                    </button>
+                    <button class="btn btn-ghost btn-sm hover:bg-slate-100 relative">
+                        <i class="fas fa-bell text-slate-500"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 mb-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+                <div class="space-y-2">
+                    <h2 class="text-3xl font-bold text-slate-900">
+                        Welcome back, <span class="text-blue-600">{{ request.user.email }}</span>
+                    </h2>
+                    <p class="text-slate-600 text-lg">
+                        Manage your assignments and track student submissions with ease.
+                    </p>
+                </div>
+                <div>
+                    <button onclick="document.getElementById('my_modal_3').showModal()" 
+                            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-plus mr-2"></i>
+                        Create Assignment
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics Cards -->
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+            <!-- Total Assignments -->
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-600">Total Assignments</p>
+                        <p class="text-3xl font-bold text-slate-900 mt-1">{{ submissions.count }}</p>
+                        <p class="text-sm text-green-600 mt-1">+21% from last month</p>
+                    </div>
+                    <div class="p-3 bg-blue-50 rounded-full">
+                        <i class="fas fa-book text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Students -->
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-600">Total Students</p>
+                        <p class="text-3xl font-bold text-slate-900 mt-1">{{ total_students }}</p>
+                        <p class="text-sm text-green-600 mt-1">+21% from last month</p>
+                    </div>
+                    <div class="p-3 bg-green-50 rounded-full">
+                        <i class="fas fa-users text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasks Completed -->
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-600">Tasks Completed</p>
+                        <p class="text-3xl font-bold text-slate-900 mt-1">86%</p>
+                        <p class="text-sm text-slate-500 mt-1">31 tasks remaining</p>
+                    </div>
+                    <div class="p-3 bg-purple-50 rounded-full">
+                        <i class="fas fa-check-circle text-purple-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Submissions -->
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-600">Today's Submissions</p>
+                        <p class="text-3xl font-bold text-slate-900 mt-1">{{ submissions.is_open.count }}</p>
+                        <p class="text-sm text-blue-600 mt-1">Active today</p>
+                    </div>
+                    <div class="p-3 bg-orange-50 rounded-full">
+                        <i class="fas fa-calendar-day text-orange-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submission Rate -->
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-600">Submission Rate</p>
+                        <p class="text-3xl font-bold text-slate-900 mt-1">89%</p>
+                        <p class="text-sm text-green-600 mt-1">Above average</p>
+                    </div>
+                    <div class="p-3 bg-green-50 rounded-full">
+                        <i class="fas fa-chart-line text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Active Assignments -->
+        <section class="mb-8">
+            <h3 class="text-2xl font-bold text-slate-900 mb-6 flex items-center">
+                <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                Active Assignments
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for submission in submissions %}
+                    {% if submission.is_open %}
+                        <div class="bg-white rounded-lg shadow-sm border border-slate-200 hover:shadow-md transition-all duration-200 overflow-hidden">
+                            <div class="p-6">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex-1">
+                                        <h4 class="text-lg font-semibold text-slate-900 mb-2">{{ submission.title|upper }}</h4>
+                                        <p class="text-sm text-slate-600 mb-1">
+                                            <i class="fas fa-graduation-cap mr-2"></i>{{ submission.course }}
+                                        </p>
+                                        <p class="text-sm text-slate-600 mb-1">
+                                            <i class="fas fa-calendar mr-2"></i>{{ submission.deadline }}
+                                        </p>
+                                        <p class="text-sm text-slate-600">
+                                            <i class="fas fa-clock mr-2"></i>{{ submission.time_remaining }}
+                                        </p>
+                                    </div>
+                                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                        Active
+                                    </span>
+                                </div>
+
+                                <div class="mb-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-slate-600">Progress</span>
+                                        <span class="text-sm font-medium text-slate-900">{{ submission.submission_ratio|floatformat:1 }}%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-200 rounded-full h-2">
+                                        <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300" 
+                                             style="width: {{ submission.submission_ratio|floatformat:0 }}%"></div>
+                                    </div>
+                                    <p class="text-xs text-slate-500 mt-1">
+                                        {{ submission.num_submitted }} / {{ total_students }} students submitted
+                                    </p>
+                                </div>
+
+                                <div class="flex justify-between items-center">
+                                    <button onclick="document.getElementById('modal-{{ submission.id }}').showModal()" 
+                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                                        <i class="fas fa-eye mr-2"></i>
+                                        View Students
+                                    </button>
+                                    <button onclick="document.getElementById('close-{{ submission.id }}').showModal()" 
+                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors {% if not submission.is_open %}opacity-50 cursor-not-allowed{% endif %}">
+                                        <i class="fas fa-times mr-2"></i>
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- View Students Modal -->
+                        <dialog id="modal-{{ submission.id }}" class="modal modal-bottom sm:modal-middle">
+                            <div class="modal-box bg-white">
+                                <h3 class="font-bold text-lg text-slate-900 mb-4">Submitted Students</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="table w-full">
+                                        <thead>
+                                            <tr class="bg-slate-50">
+                                                <th class="text-slate-600">Name</th>
+                                                <th class="text-slate-600">ID</th>
+                                                <th class="text-slate-600">Submitted At</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for s in submission.studentsubmission_set.all %}
+                                            <tr class="hover:bg-slate-50">
+                                                <td class="text-slate-900">{{ s.student.email }}</td>
+                                                <td class="text-slate-600">{{ s.student.student_id }}</td>
+                                                <td class="text-slate-600">{{ s.submitted_at }}</td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="3" class="text-center text-slate-500 py-8">No submissions yet.</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-action">
+                                    <a href="{% url 'download-zip' submission.id %}" 
+                                       class="btn bg-green-600 hover:bg-green-700 text-white {% if not submission.studentsubmission_set.all %}btn-disabled{% endif %}">
+                                        <i class="fas fa-download mr-2"></i>
+                                        Download ZIP
+                                    </a>
+                                    <form method="dialog">
+                                        <button class="btn btn-outline">Close</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </dialog>
+
+                        <!-- Close Assignment Modal -->
+                        <dialog id="close-{{ submission.id }}" class="modal modal-bottom sm:modal-middle">
+                            <div class="modal-box bg-white">
+                                <h3 class="font-bold text-lg text-slate-900">Close Assignment</h3>
+                                <p class="py-4 text-slate-600">Are you sure you want to close this assignment submission? This action cannot be undone.</p>
+                                <div class="modal-action">
+                                    <form method="dialog">
+                                        <button hx-post="{% url 'close-submission' submission.id %}" 
+                                                hx-target="body" 
+                                                class="btn bg-red-600 hover:bg-red-700 text-white mr-2">
+                                            Yes, Close
+                                        </button>
+                                        <button class="btn btn-outline">Cancel</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </dialog>
+                    {% endif %}
+                {% empty %}
+                    <div class="col-span-full text-center py-12">
+                        <i class="fas fa-inbox text-slate-300 text-6xl mb-4"></i>
+                        <h3 class="text-xl font-medium text-slate-900 mb-2">No active assignments</h3>
+                        <p class="text-slate-600">Create your first assignment to get started.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Archived Assignments -->
+        <section>
+            <h3 class="text-2xl font-bold text-slate-900 mb-6 flex items-center">
+                <span class="w-2 h-2 bg-slate-400 rounded-full mr-3"></span>
+                Archived Assignments
+            </h3>
+            
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="table w-full">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="text-slate-600">
+                                    <a hx-get="{% url 'admin-dashboard' %}?sort=title&dir={% if sort == 'title' and dir == 'asc' %}desc{% else %}asc{% endif %}" 
+                                       hx-target="#archived-table" 
+                                       hx-swap="outerHTML"
+                                       hx-push-url="true"
+                                       class="flex items-center gap-2 hover:text-blue-600 cursor-pointer">
+                                        Title
+                                        {% if sort == 'title' %}
+                                            <i class="fas fa-sort-{% if dir == 'asc' %}up{% else %}down{% endif %}"></i>
+                                        {% endif %}
+                                    </a>
+                                </th>
+                                <th class="text-slate-600">
+                                    <a hx-get="{% url 'admin-dashboard' %}?sort=course&dir={% if sort == 'course' and dir == 'asc' %}desc{% else %}asc{% endif %}" 
+                                       hx-target="#archived-table" 
+                                       hx-swap="outerHTML"
+                                       hx-push-url="true"
+                                       class="flex items-center gap-2 hover:text-blue-600 cursor-pointer">
+                                        Course
+                                        {% if sort == 'course' %}
+                                            <i class="fas fa-sort-{% if dir == 'asc' %}up{% else %}down{% endif %}"></i>
+                                        {% endif %}
+                                    </a>
+                                </th>
+                                <th class="text-slate-600">
+                                    <a hx-get="{% url 'admin-dashboard' %}?sort=created_at&dir={% if sort == 'created_at' and dir == 'asc' %}desc{% else %}asc{% endif %}" 
+                                       hx-target="#archived-table" 
+                                       hx-swap="outerHTML"
+                                       hx-push-url="true"
+                                       class="flex items-center gap-2 hover:text-blue-600 cursor-pointer">
+                                        Created
+                                        {% if sort == 'created_at' %}
+                                            <i class="fas fa-sort-{% if dir == 'asc' %}up{% else %}down{% endif %}"></i>
+                                        {% endif %}
+                                    </a>
+                                </th>
+                                <th class="text-slate-600">
+                                    <a hx-get="{% url 'admin-dashboard' %}?sort=deadline&dir={% if sort == 'deadline' and dir == 'asc' %}desc{% else %}asc{% endif %}" 
+                                       hx-target="#archived-table" 
+                                       hx-swap="outerHTML"
+                                       hx-push-url="true"
+                                       class="flex items-center gap-2 hover:text-blue-600 cursor-pointer">
+                                        Deadline
+                                        {% if sort == 'deadline' %}
+                                            <i class="fas fa-sort-{% if dir == 'asc' %}up{% else %}down{% endif %}"></i>
+                                        {% endif %}
+                                    </a>
+                                </th>
+                                <th class="text-slate-600">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="archived-table">
+                            {% for submission in submissions %}
+                                {% if not submission.is_open %}
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="font-medium text-slate-900">{{ submission.title }}</td>
+                                        <td class="text-slate-600">{{ submission.course }}</td>
+                                        <td class="text-slate-600">{{ submission.created_at }}</td>
+                                        <td class="text-slate-600">{{ submission.deadline }}</td>
+                                        <td>
+                                            <button onclick="document.getElementById('archive-{{ submission.id }}').showModal()" 
+                                                    class="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                                                <i class="fas fa-eye mr-1"></i>
+                                                View
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Archived Assignment Modals -->
+            {% for submission in submissions %}
+                {% if not submission.is_open %}
+                    <dialog id="archive-{{ submission.id }}" class="modal modal-bottom sm:modal-middle">
+                        <div class="modal-box bg-white">
+                            <h3 class="font-bold text-lg text-slate-900 mb-4">Submitted Students</h3>
+                            <div class="overflow-x-auto">
+                                <table class="table w-full">
+                                    <thead>
+                                        <tr class="bg-slate-50">
+                                            <th class="text-slate-600">Name</th>
+                                            <th class="text-slate-600">ID</th>
+                                            <th class="text-slate-600">Submitted At</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for s in submission.studentsubmission_set.all %}
+                                        <tr class="hover:bg-slate-50">
+                                            <td class="text-slate-900">{{ s.student.email }}</td>
+                                            <td class="text-slate-600">{{ s.student.student_id }}</td>
+                                            <td class="text-slate-600">{{ s.submitted_at }}</td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="3" class="text-center text-slate-500 py-8">No submissions yet.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-action">
+                                <a href="{% url 'download-zip' submission.id %}" 
+                                   class="btn bg-green-600 hover:bg-green-700 text-white {% if not submission.studentsubmission_set.all %}btn-disabled{% endif %}">
+                                    <i class="fas fa-download mr-2"></i>
+                                    Download ZIP
+                                </a>
+                                <form method="dialog">
+                                    <button class="btn btn-outline">Close</button>
+                                </form>
+                            </div>
+                        </div>
+                    </dialog>
+                {% endif %}
+            {% endfor %}
+        </section>
+    </main>
+
+    <!-- Create Assignment Modal -->
+    <dialog id="my_modal_3" class="modal">
+        <div class="modal-box bg-white max-w-lg">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                    <i class="fas fa-times"></i>
+                </button>
+            </form>
+            
+            <h3 class="font-bold text-lg text-slate-900 mb-6">Create New Assignment</h3>
+            
+            <form id="sub-form"
+                  hx-post="{% url 'submission-create' %}"
+                  hx-target="#form-wrapper"
+                  hx-swap="outerHTML swap:0ms"
+                  hx-trigger="submit"
+                  hx-indicator="#spinner"
+                  enctype="multipart/form-data"
+                  class="space-y-6">
+                {% csrf_token %}
+                
+                <div id="form-wrapper">
+                    <!-- Title -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Title</label>
+                        <input type="text" 
+                               name="title" 
+                               placeholder="Enter assignment title" 
+                               class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                               required>
+                    </div>
+
+                    <!-- Course -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Course</label>
+                        <select name="course" 
+                                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                required>
+                            {% for value, label in form.course.field.choices %}
+                                <option value="{{ value }}" {% if form.course.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Format -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Format</label>
+                        <select name="format" 
+                                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                required>
+                            {% for label, value in form.format.field.choices %}
+                                <option value="{{ label }}" {% if form.format.value == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Deadline -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Deadline</label>
+                        <input type="datetime-local" 
+                               name="deadline" 
+                               class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                               required>
+                    </div>
+
+                    <!-- Note -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Note</label>
+                        <input type="text" 
+                               name="note" 
+                               placeholder="Optional note" 
+                               class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="pt-4">
+                        <button type="submit" 
+                                form="sub-form" 
+                                class="w-full inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200">
+                            <span>Create Assignment</span>
+                            <span id="spinner" class="ml-2 hidden">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script>
+        document.body.addEventListener('htmx:configRequest', function(event) {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            event.detail.headers['X-CSRFToken'] = csrfToken;
+        });
+
+        // Show spinner during HTMX requests
+        document.body.addEventListener('htmx:beforeRequest', function(event) {
+            const spinner = document.getElementById('spinner');
+            if (spinner) {
+                spinner.classList.remove('hidden');
+            }
+        });
+
+        document.body.addEventListener('htmx:afterRequest', function(event) {
+            const spinner = document.getElementById('spinner');
+            if (spinner) {
+                spinner.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

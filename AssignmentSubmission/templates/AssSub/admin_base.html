@@ -1,0 +1,166 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+    <title>Django Tailwind</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		{% tailwind_css %}
+        <link rel="manifest" href="{% static 'manifest.json' %}">
+<meta name="theme-color" content="#1e40af">
+	</head>
+<body class=" bg-base-300">
+  
+    <div class="flex min-h-screen">
+    
+        <!-- Aside (hidden on mobile, sticky on desktop) -->
+        <aside class="hidden md:flex group z-50 flex-col w-20 border-r 
+             transition-all duration-300 ease-in-out hover:w-64 
+             border-slate-200 bg-white sticky top-0 h-dvh py-6">
+        <!-- Logo / Top -->
+        <nav class="flex flex-col flex-1 space-y-4 items-center group-hover:items-start group-hover:px-6">
+        <div class="mb-8">
+        <a href="#" class="btn btn-circle btn-sm bg-blue-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+        </a>
+        </div>
+
+        <!-- Links -->
+        <div class="flex-1 space-y-2">
+        <div class="hover:bg-blue-100 py-2 px-3 w-full rounded-4xl hover:text-blue-600">
+            <a href="{% url 'admin-dashboard' %}" class="group flex items-center">
+            <button class="btn btn-circle btn-outline hover:bg-blue-100 hover:border-blue-600 hover:text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                </svg>
+            </button>
+            <span class="hidden group-hover:inline ml-4 font-medium ease-in">Dashboard</span>
+            </a>
+        </div>
+        <div class="hover:bg-blue-100 py-2 px-3 w-full rounded-4xl hover:text-blue-600">
+            <a href="{% url 'active-submissions' %}" class="">
+            <button class="btn btn-circle btn-outline hover:bg-blue-100 hover:border-blue-600 hover:text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                </svg>
+            </button>
+            <span class="hidden group-hover:inline ml-4 font-medium">Active</span>
+            </a>
+        </div>
+        <div class="hover:bg-blue-100 py-2 px-3 w-full rounded-4xl hover:text-blue-600">
+            <a href="{% url 'closed-submissions' %}" class="">
+            <button class="btn btn-circle btn-outline hover:bg-blue-100 hover:border-blue-600 hover:text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                </svg>
+            </button>
+            <span class="hidden group-hover:inline ml-4 font-medium">Closed</span>
+            </a>
+        </div>
+    </div>
+        
+
+        <!-- Bottom -->
+        <div class="hover:bg-blue-100 py-2 px-3 w-full rounded-4xl hover:text-blue-600">
+        <a href="#" class="group flex items-center">
+            <button class="btn btn-circle btn-outline hover:bg-blue-100 hover:border-blue-600 hover:text-blue-600">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            </svg>
+            </button>
+            <span class="hidden group-hover:inline ml-4 font-medium ease-in">Settings</span>
+        </a>
+        </div>
+        </nav>
+        </aside>
+
+
+        <!-- Main -->    
+        <main class="bg-base-200 flex flex-col md:px-8 space-y-6 flex-1">
+        <div class="navbar bg-base-100 shadow-sm">
+        <div class="navbar-start">
+        <div class="dropdown">
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /> </svg>
+            </div>
+            <ul
+            tabindex="0"
+            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+            <li><a>Homepage</a></li>
+            <li><a>Portfolio</a></li>
+            <li><a>About</a></li>
+            </ul>
+        </div>
+        </div>
+        <div class="navbar-center">
+        <a class="btn btn-ghost text-xl">Assignment Sub</a>
+        </div>
+        <div class="navbar-end">
+        <button class="btn btn-ghost btn-circle">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /> </svg>
+        </button>
+        <button class="btn btn-ghost btn-circle">
+            <div class="indicator">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /> </svg>
+            <span class="badge badge-xs badge-primary indicator-item"></span>
+            </div>
+        </button>
+        </div>
+        </div>
+        {% block content %}
+        {% endblock content %}
+        </main>
+
+    </div>
+    
+    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t shadow-2xl border border-slate-200  z-50">  <!-- Smoke/fade overlay at the top -->
+
+    <div class="dock relative">
+        <button>
+        <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <g fill="currentColor" stroke-linejoin="miter" stroke-linecap="butt">
+            <polyline points="1 11 12 2 23 11" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"></polyline>
+            <path d="m5,13v7c0,1.105.895,2,2,2h10c1.105,0,2-.895,2-2v-7" fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></path>
+            <line x1="12" y1="22" x2="12" y2="18" fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></line>
+            </g>
+        </svg>
+        <span class="dock-label">Home</span>
+        </button>
+        
+        <button class="dock-active">
+        <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <g fill="currentColor" stroke-linejoin="miter" stroke-linecap="butt">
+            <polyline points="3 14 9 14 9 17 15 17 15 14 21 14" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"></polyline>
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></rect>
+            </g>
+        </svg>
+        <span class="dock-label">Inbox</span>
+        </button>
+        
+        <button>
+        <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <g fill="currentColor" stroke-linejoin="miter" stroke-linecap="butt">
+            <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></circle>
+            <path d="m22,13.25v-2.5l-2.318-.966c-.167-.581-.395-1.135-.682-1.654l.954-2.318-1.768-1.768-2.318.954c-.518-.287-1.073-.515-1.654-.682l-.966-2.318h-2.5l-.966,2.318c-.581.167-1.135.395-1.654.682l-2.318-.954-1.768,1.768.954,2.318c-.287.518-.515,1.073-.682,1.654l-2.318.966v2.5l2.318.966c.167.581.395,1.135.682,1.654l-.954,2.318,1.768,1.768,2.318-.954c.518.287,1.073.515,1.654.682l.966,2.318h2.5l.966-2.318c.581-.167,1.135-.395,1.654-.682l2.318.954,1.768-1.768-.954-2.318c.287-.518.515-1.073.682-1.654l2.318-.966Z" fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></path>
+            </g>
+        </svg>
+        <span class="dock-label">Settings</span>
+        </button>
+    </div>
+    </nav>
+  
+</body>
+
+<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+<script>
+  document.body.addEventListener('htmx:configRequest', function(event) {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    event.detail.headers['X-CSRFToken'] = csrfToken;
+  });
+</script>
+
+</html>

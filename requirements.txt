@@ -1,0 +1,16 @@
+asgiref==3.10.0
+Django==5.2.7
+django-browser-reload==1.21.0
+django-htmx==1.26.0
+django-mathfilters==1.0.0
+django-tailwind==4.2.0
+gunicorn==23.0.0
+numpy==2.3.4
+packaging==25.0
+pandas==2.3.3
+python-dateutil==2.9.0.post0
+pytz==2025.2
+six==1.17.0
+sqlparse==0.5.3
+tzdata==2025.2
+whitenoise==6.11.0

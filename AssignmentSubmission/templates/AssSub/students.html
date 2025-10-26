@@ -1,0 +1,75 @@
+{% extends 'AssSub/admin_base.html' %}
+
+{% block content %}
+        <h1 class="text-3xl font-bold mb-6">Manage Pre-Approved Students</h1>
+        <button class="btn" onClick="document.getElementById('students-modal').showModal()">Upload Students</button>
+        
+        <!-- Modal -->
+        <dialog id="students-modal" class="modal modal-bottom sm:modal-middle">
+          <div class="modal-box">
+            <h3 class="font-bold text-lg">Hello!</h3>
+            <form method="post" action="{% url 'upload-students' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <fieldset class="fieldset">
+                    <legend class="fieldset-legend">.xlsx file only</legend>
+                    <input type="file" name="file" class="file-input" accept=".xlsx" required />
+                    <label class="label">Max size 2MB</label>
+                </fieldset>
+                <button type="submit" class="btn">Submit</button>
+            </form>
+            <div class="modal-action">
+              <form method="dialog">
+                <button class="btn">Close</button>
+              </form>
+            </div>
+          </div>
+        </dialog>
+            
+                {% for message in messages %}
+                {% if "students" in message.tags %}
+
+                    <div class="alert  alert-{{ message.level_tag }}">
+                        {{ message }}
+                    </div>
+                    
+                {% endif %}
+                {% endfor %}
+        <div class="overflow-x-auto bg-base-100">
+          <table class="table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+              <tr class="hover:bg-base-300">
+                <td>{{ forloop.counter }}</td>
+                <td>{{ student.name }}</td>
+                <td>{{ student.student_id }}</td>
+                <td><a class="text-blue-600 hover:underline" target="_blank" href="mailto:{{ student.email }}">{{ student.email }}</a></td>
+                <td>
+                    {% if student.is_verified %}
+                                <span class="text-green-500 flex font-semibold">
+                                    <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                                    </svg> Verified -->
+                                    Verified
+                                </span>
+                    {% else %}
+                        <span class="text-red-500 flex font-semibold">Not Verified</span>
+                    {% endif %}
+                </td>
+            </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+
+    
+{% endblock content %}

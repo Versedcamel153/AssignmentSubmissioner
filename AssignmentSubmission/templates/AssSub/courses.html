@@ -1,0 +1,48 @@
+{% extends 'AssSub/admin_base.html' %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Manage Courses</h1>
+<button class="btn" onClick="document.getElementById('courses-modal').showModal()">Upload Courses</button>
+        
+        <!-- Modal -->
+        <dialog id="courses-modal" class="modal modal-bottom sm:modal-middle">
+          <div class="modal-box">
+            <h3 class="font-bold text-lg">Hello!</h3>
+            <form method="post" action="{% url 'upload-courses' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <fieldset class="fieldset">
+                    <legend class="fieldset-legend">.xlsx file only</legend>
+                    <input type="file" name="file" class="file-input" accept=".xlsx" required />
+                    <label class="label">Max size 2MB</label>
+                </fieldset>
+                <button type="submit" class="btn">Submit</button>
+            </form>
+            <div class="modal-action">
+              <form method="dialog">
+                <button class="btn">Close</button>
+              </form>
+            </div>
+          </div>
+        </dialog>
+<div class="overflow-x-auto">
+  <table class="table bg-base-100">
+
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Name</th>
+        <!-- <th>Lecturer</th> -->
+      </tr>
+    </thead>
+    <tbody>
+      {% for course in courses %}
+      <tr class="hover:bg-base-300">
+        <th>{{ course.code }}</th>
+        <td>{{ course.name }}</td>
+        <!-- <td>{{ course.lecturer }}</td> -->
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock content %}

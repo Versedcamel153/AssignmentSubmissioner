@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Student List</title>
+</head>
+<body>
+    <h2>Upload Excel File (Courses List)</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file">Select Excel file (.xlsx):</label><br>
+        <input type="file" name="file" accept=".xlsx" required><br><br>
+        <button type="submit">Upload</button>
+    </form>
+
+    <p><strong>Expected Columns:</strong> <code>Student ID</code>, <code>Name</code>, <code>Email</code></p>
+</body>
+</html>

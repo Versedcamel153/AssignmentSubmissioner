@@ -1,0 +1,13 @@
+<script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" type="module"></script>
+<div class="flex flex-col items-center justify-center">
+
+<dotlottie-wc src="https://lottie.host/902327a2-9b64-4a65-8581-ee405438419b/tSj21dMTjK.lottie" autoplay></dotlottie-wc>
+<p class="text-center text-2xl font-bold">You have sucessfully Verified your email address.</p>
+<p class="text-center text-xl"> You'll be redirected shortly so you can log in.</p>
+</div>
+
+<script>
+  setTimeout(() => {
+    window.location.href = "{% url 'login' %}";
+  }, 10000); // 4 seconds
+</script>

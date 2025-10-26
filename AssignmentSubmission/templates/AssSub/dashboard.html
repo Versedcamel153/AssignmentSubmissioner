@@ -1,0 +1,178 @@
+{% extends 'AssSub/dash_base.html' %}
+
+{% block content %}
+
+<section class="bg-white rounded-xl shadow-sm border mx-4 border-slate-200 p-8 mb-8">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+        <div class="space-y-2">
+            <h2 class="text-3xl font-bold text-slate-900">
+                Hey there, <span class="text-wrap text-blue-600">{{ request.user.email }}</span>
+            </h2>
+            <p class="text-slate-600 text-lg">
+                Manage your assignments and track student submissions with ease.
+            </p>
+        </div>
+        <!-- <div>
+            <button onclick="document.getElementById('submission-create-modal').showModal()"
+                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-green-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl">
+                <i class="fas fa-plus mr-2"></i>
+                Create Assignment
+            </button>
+        </div> -->
+    </div>
+</section>
+
+<!-- Open Submissions -->
+<section class="bg-white rounded-xl shadow-sm border border-slate-200 mx-4 p-8 mb-8">
+    <!-- Mobile cards -->
+    <p class="font-semibold text-center mb-4">Pending Submissions</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 md:gap-8 ">
+    {% for submission in open_submissions %}
+        <div class="flex hover:shadow-xl border-amber-500 transition-all duration-200 hover:scale-[1.01] cursor-pointer items-center relative justify-between p-4 border rounded-lg shadow-sm bg-white mb-6"
+            onclick="document.getElementById('modal-{{ submission.id }}').showModal()">
+            <div class="flex flex-col w-full">
+                <span class="absolute top-2 right-2 text-xs font-semibold badge badge-soft badge-warning">
+                    Pending
+                </span>
+                <span class="font-semibold truncate">{{ submission.title|upper }}</span>
+                <span class="py-2 text-xs text-gray-500 truncate">{{ submission.course.name }}</span>
+                <span>Due: <span class="text-sm text-red-600">{{ submission.deadline }}</span></span>
+            </div>
+        </div>
+
+
+    <dialog id="modal-{{ submission.id }}" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box">
+            <!-- reuse the full card details here -->
+            <!-- <p class="text-2xl text-center">Submissions for: {{ submission.title }}</p> -->
+            <div id="submission-container-{{ submission.id }}">
+                <div>
+                    <p class="text-center font-semibold text-2xl"> {{ submission.title.upper }}</p>
+                    <p class="text-xl font-semibold">Details:</p>
+                    {% if submission.note %}
+                    <p><strong>Submission Note: </strong> {{ submission.note }}</p>
+                    {% endif %}
+                    <p><strong>Required file format:</strong> {{ submission.format }}</p>
+                    
+                </div>
+                <blockquote class="py-4 pl-2 mt-2 bg-green-50 border-green-500 border-l-3">
+                    {% if submission.has_submitted %}
+                    <p class="text-green-500 font-semibold">
+                        You've already submitted a file:
+                        <a href="{{ submission.submission_data.file.url }}" target="_blank" class="text-blue-600 underline">View
+                            submission
+                        </a>
+                    </p>
+                    {% endif %}
+                    <p>Note: The file will be automatically renamed in the format
+                        <strong>24254XXXXX_BCE_Group_B</strong>
+                    </p>
+                </blockquote>
+                <form id="sub-form-{{ submission.id }}" hx-post="{% url 'submission' submission.id %}"
+                    hx-target="#submission-container-{{ submission.id }}" hx-swap="outerHTML" hx-trigger="submit"
+                    hx-indicator="#spinner-{{ submission.id }}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div id="form-wrapper-{{ submission.id }}">
+                        <!-- Form content -->
+                            <fieldset class="fieldset">
+                                <legend class="fieldset-legend">Pick a file</legend>
+                                <input type="file" name="file" class="file-input" required />
+                                <label class="label">Max size 2MB</label>
+                            </fieldset>
+                    </div>
+
+                </form>
+            </div>
+            <form method="dialog" class="modal-action">
+                <button form="sub-form-{{ submission.id }}" type="submit" class="btn">
+                    <span>Submit</span>
+                    <span id="spinner-{{ submission.id }}" class="loading loading-spinner htmx-indicator"></span>
+                </button>
+                <button class="btn">Close</button>
+            </form>
+        </div>
+    </dialog>
+    {% endfor %}
+    </div>
+
+</section>
+
+<!-- Submissions History -->
+<section class="bg-white rounded-xl shadow-sm border border-slate-200 mx-4 p-8 mb-8">
+    <!-- Mobile cards -->
+    <p class="flex justify-center font-semibold text-center mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mx-2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+        Submission History
+    </p>
+        <div class="flex justify-center mb-4">
+            <button 
+                hx-get="{% url 'dashboard' %}?filter=all"
+                hx-target="#submissions-container"
+                hx-swap="innerHTML"
+                class="tab border-b-2 border-blue-500 pb-1 text-gray-500 hover:text-gray-800">
+                All
+            </button>
+
+            <button 
+                hx-get="{% url 'dashboard' %}?filter=submitted"
+                hx-target="#submissions-container"
+                hx-swap="innerHTML"
+                class="tab border-b-2 pb-1 text-gray-500 hover:text-gray-800">
+                Submitted
+            </button>
+
+            <button 
+                hx-get="{% url 'dashboard' %}?filter=not-submitted"
+                hx-target="#submissions-container"
+                hx-swap="innerHTML"
+                class="tab border-b-2 pb-1 text-gray-500 hover:text-gray-800">
+                Not Submitted
+            </button>
+        </div>
+<script>
+document.addEventListener("htmx:beforeRequest", function (evt) {
+  const tabs = document.querySelectorAll(".tab");
+  tabs.forEach(tab => tab.classList.remove("border-blue-500", "text-blue-600"));
+  
+  const clickedTab = evt.target;
+  clickedTab.classList.add("border-blue-500", "text-blue-600");
+});
+</script>
+        <div id="submissions-container">
+        {% include 'AssSub/partials/_submission_list.html' %}
+        </div>
+
+
+    <!-- Desktop cards -->
+    
+</section>
+
+
+
+<script>
+    function showSpinner(event) {
+        const form = event.target.closest('form');
+        const spinner = document.getElementById('spinner');
+        const btnText = document.getElementById('btnText');
+        spinner.style.display = 'block';
+        btnText.style.display = 'none'; // Hide the button text
+
+        event.preventDefault(); // Prevent form submission for demonstration
+        setTimeout(() => {
+            //spinner.style.display = 'none'; // Hide spinner after 2 seconds
+            form.submit(); // Submit the form after showing the spinner
+        }, 2000);
+
+    }
+</script>
+<script>
+    document.body.addEventListener('htmx:configRequest', function (event) {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        event.detail.headers['X-CSRFToken'] = csrfToken;
+    });
+</script>
+<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+
+{% endblock content %}

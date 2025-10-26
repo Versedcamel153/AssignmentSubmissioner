@@ -1,0 +1,40 @@
+<div id="register-content">
+        <div class="card base-100 shadow-lg w-96 p-4 rounded-lg bg-white">
+          <form
+          id="register-form-1"
+            method="post"
+            hx-post="{% url 'check-id' %}"
+            hx-swap="outerHTML"
+            hx-trigger="submit delay:2000ms"
+            hx-target="#register-content"
+            class="space-y-4">
+            {% csrf_token %}
+            <div class="card-body">
+              
+            <p class="text-3xl text-center mb-8">Registration</p>
+                {% if form_error %}
+                <div role="alert" class="alert alert-error alert-soft">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>{{ form_error }}</span>
+                </div>
+                {% endif %}
+            
+            <div class="my-4">
+              <label for="student_id" class="floating-label">
+                <span>Student ID</span>
+                <input type="text" id="student_id" name="student_id" class="input" placeholder="24254XXXXX" required>
+              </label>
+            </div>
+            
+            <div class="mb-4">
+              <button type="submit" class="btn btn-primary w-full" onclick="showSpinner(event)">
+                <span id="btnText">Continue</span>
+                <span class="loading loading-spinner" id="spinner" style="display: none;"></span>
+              </button>
+            </div>
+            </div>            
+          </form>
+        </div>
+</div>

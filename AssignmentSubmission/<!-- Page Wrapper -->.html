@@ -1,0 +1,36 @@
+<!-- Page Wrapper -->
+<div class="min-h-screen bg-fixed bg-[url('/static/images/bg.jpg')] bg-cover bg-center p-6">
+
+    <!-- Sticky Header -->
+    <div class="sticky top-0 z-20 mb-6 bg-white/30 backdrop-blur-md shadow-sm rounded-xl px-6 py-4">
+        <h1 class="text-3xl font-bold text-base-content">📚 Student Dashboard</h1>
+    </div>
+
+    <!-- Section Label -->
+    <div class="text-sm uppercase text-base-content/50 font-semibold tracking-wide mb-2">Active Submissions</div>
+
+    <!-- Card Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Submission Card -->
+        <div
+            class="card bg-white/10 backdrop-blur-md border border-white/20 shadow-md hover:shadow-xl transition-all duration-200 hover:scale-[1.01]">
+            <div class="card-body">
+                <h2 class="card-title text-base-content">📝 Engineering Drawing</h2>
+                <p class="text-sm text-base-content/80">Deadline: <span class="font-medium">July 15, 2025</span></p>
+
+                <progress class="progress progress-accent w-full mt-2" value="67" max="100"></progress>
+                <p class="text-xs mt-1 text-base-content/60">67% submitted</p>
+
+                <div class="card-actions justify-end mt-4">
+                    <button class="btn btn-sm btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Repeat Cards... -->
+        <!-- You can loop these with Django/Jinja {% for submission in submissions %} -->
+
+    </div>
+
+</div>

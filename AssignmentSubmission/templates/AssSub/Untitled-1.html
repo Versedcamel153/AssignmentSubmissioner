@@ -1,0 +1,76 @@
+
+<section class="bg-white rounded-xl shadow-sm border border-slate-200 mx-4 p-8 mb-8">
+
+        <p class="font-semibold text-center mb-4">Past Submissions</p>
+    {% for past_submission in past_submissions %}
+    <div class="block md:hidden">
+        <div class="flex items-center relative justify-between p-4 border rounded-lg shadow-sm bg-white mb-6"
+            onclick="document.getElementById('modal-{{ submission.id }}').showModal()">
+            <div class="flex flex-col">
+                <span class="font-semibold truncate">{{ past_submission.submission.title|upper }}</span>
+                <span class="py-2 text-xs text-gray-500 truncate">{{ past_submission.submission.course.name }}</span>
+                {% if past_submission.file %}
+                <span class="flex pb-2 text-blue-600">
+                    <!-- <strong>File: </strong> -->
+                    <a class="flex items-center" href="{{ past_submission.file.url }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-4 mr-1">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        </svg>
+                        <span class="text-xs underline underline-offset-2 overflow-ellipsis">View file</span>
+                    </a>
+
+                </span>
+                {% else %}
+                <span class="flex items-center text-xs pb-2 text-red-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 mr-1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                        </svg>
+                        Did not submit a file
+                    </span>
+                {% endif %}
+                <span>Submitted at: <span class="text-sm text-gray-600">{{ past_submission.submitted_at }}</span></span>
+            </div>
+            
+        </div>
+    </div>
+    {% endfor %}
+
+
+
+    {% for submission in submissions %}
+    <div class="hidden card card-compact w-96 bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">{{ submission.title }}</h2>
+            <p>Format: {{ submission.format}}</p>
+            <!-- <p>File: {{ submission.file.name }}</p> -->
+            {% if submission.file %}
+            <p>
+                <!-- <strong>File: </strong> -->
+                <a class="flex items-center" href="{{ submission.file.url }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-4 mr-1">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                    </svg>
+                    <span class="text-xs overflow-ellipsis">{{ submission.filename }}</span>
+                </a>
+
+            </p>
+            {% else %}
+            No file uploaded
+            {% endif %}
+            <p>past_submission At: {{ past_submission.submitted_at }}</p>
+            <div class="card-actions justify-center">
+
+                <button class="btn btn-disabled" disabled>Closed</button>
+
+            </div>
+        </div>
+
+    </div>
+    {% endfor %}
+
+   
+</section>
