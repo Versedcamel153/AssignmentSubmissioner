@@ -1,55 +1,50 @@
-<div id="register-content">
-<div class="card base-100 shadow-lg w-96 p-4 rounded-lg bg-white">
-    <form
-      id="register-form-2"
-      method="post"
-      hx-post="{% url 'send-otp' %}"
-      hx-swap="outerHTML"
-      hx-trigger="submit delay:2000ms"
-      hx-target="#register-content"
-      class="space-y-4">
-      
-    {% csrf_token %}
-    <div class="card-body">
-      <!-- {% if student.student_id %}
-        <p>Student found</p>
-      {% endif %}           -->
-        
+<div id="register-content" class="form-step-container">
 
-          <p class="text-center font-bold text-2xl">Hey there, {{ student.name }}</p>
-          <p class="text-md text-slate-500 text-center">We've found your account. Please confirm the email: <strong>{{ masked_email }}</strong> to receive a One Time Password to verify your email address.</p>
+  <div class="bg-white border border-gray-300 w-80 md:w-96 py-8 flex items-center flex-col mb-3">
+    <p class="font-bold text-2xl">Verify Your Email</p>
+    <p class="text-center font-bold text-xl">Hey there, {{ student.name }}</p>
+    <p class="text-sm mx-4 text-slate-500 text-center">We've found your account. Please confirm the email:
+      <strong>{{ masked_email }}</strong>
+      so we can send you a verification code.
+    </p>
 
-          {% if form_error %}
-          <div role="alert" class="alert alert-error alert-soft">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>{{ form_error }}</span>
-          </div>
-          {% endif %}
-          
-          <input type="hidden" name="student_id" value="{{ student.student_id }}">
-          <input type="hidden" name="student_email" value="{{ student.email }}"> 
-          <div class="my-4">
-              <label for="email" class="floating-label">
-                <span>Confirm Email</span>
-                <input type="email" id="email" name="email" class="input" required>
-              </label>
-            </div>
+    <form class="mt-8 w-64 md:w-80 flex flex-col" method="post" id="register-form-2" method="post"
+      hx-post="{% url 'send-otp' %}" hx-swap="outerHTML swap:0.3s settle:0.4s" hx-trigger="submit delay:2000ms"
+      hx-target="#register-content">
+      {% csrf_token %}
 
-            <div class="mb-4">
-              <button form="register-form-2" type="submit" class="btn btn-primary w-full" onclick="showSpinner(event)">
-                <span id="btnText">Send OTP</span>
-                <span class="loading loading-spinner" id="spinner" style="display: none;"></span>
-              </button>
-            </div>
-    </div>
-  </form>
+      <!-- Non-field errors (e.g. password mismatch) -->
+      {% if form_error %}
+      <div role="alert" class="alert alert-error alert-soft">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ form_error }}</span>
+      </div>
+      {% endif %}
+      <input type="hidden" name="student_id" value="{{ student.student_id }}">
+      <input type="hidden" name="student_email" value="{{ student.email }}">
+
+      <!-- Confirm Email -->
+      <input
+        class="text-xs mt-2 w-full rounded border bg-gray-100 border-gray-300 px-2 py-2 focus:outline-none focus:border-gray-400 active:outline-none"
+        id="email" name="email" placeholder="Confirm Email" required>
+      {% for error in form.login.errors %}
+      <p class="text-xs mt-1 text-red-500 md:text-sm">{{ error }}</p>
+      {% endfor %}
+
+      <button type="submit" class="btn btn-primary mt-4 font-medium" id="submitBtn">
+        <span class="loading loading-spinner" id="spinner" style="display: none;"></span>
+        <span id="btnText">Send Code</span>
+      </button>
+    </form>
+
+  </div>
+
+  <div class="bg-white border border-gray-300 text-center w-80 md:w-96 py-4">
+    <span class="text-sm">Already have an account?</span>
+    <a href="{% url 'login' %}" class="link link-hover text-accent text-sm font-semibold">Login</a>
+  </div>
+
 </div>
-</div>
-<script>
-  document.body.addEventListener('htmx:configRequest', function(event) {
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    event.detail.headers['X-CSRFToken'] = csrfToken;
-  });
-</script>

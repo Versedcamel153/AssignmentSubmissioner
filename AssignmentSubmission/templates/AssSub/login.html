@@ -3,11 +3,31 @@
 <html lang="en">
 
 <head>
-  <title>Django Tailwind</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  {% tailwind_css %}
+    <title>Django Tailwind</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% tailwind_css %}
+
+    <style>
+        /* Multi-step form animations */
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Apply initial animation to form container */
+        .form-step-container {
+            animation: slideInRight 0.4s ease-out;
+        }
+    </style>
 </head>
 <!-- <style>
   body {
@@ -16,94 +36,141 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
   }
 </style> -->
 
-<body class="bg-gray-50">
-    <div class="flex items-center justify-center min-h-[100dvh]">
-      <div class="card base-100 shadow-lg w-96 p-4 rounded-lg bg-white">
-        <form method="post" action="{% url 'login' %}" class="space-y-4">
-          {% csrf_token %}
-          <div class="card-body">
-            
-          <p class="text-3xl text-center mb-8">Login</p>
-          {% if form.errors %}
-              {% for error in form.non_field_errors %}
-                <div role="alert" class="alert alert-error alert-soft">
-                    <span>{{ error }}</span>
-                </div>
-              {% endfor %}
-          {% endif %}
-           {% for message in messages %}
-              {% if "login" in message.tags %}
-                <div role="alert" class="alert alert-error alert-soft">
-                    <span>{{ message }}</span>
-                </div>
-              {% endif %}
+<div class="h-screen bg-gray-50 flex flex-col justify-center items-center form-step-container">
+    <div class="bg-white border border-gray-300 w-80 md:w-96 py-8 flex items-center flex-col mb-3">
+        <p class="font-bold text-2xl">Sign In</p>
+        <!-- <p class="text-sm text-center text-gray-500">Login to see photos and videos from your friends.</p> -->
+
+
+        <form class="mt-8 w-64 md:w-80 flex flex-col" method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+
+            <!-- Non-field errors (e.g. password mismatch) -->
+            {% if form.errors %}
+            {% for error in form.non_field_errors %}
+            <div role="alert" class="alert alert-error alert-soft">
+                <span>{{ error }}</span>
+            </div>
             {% endfor %}
-          <div class="mb-4">
-            <label for="student_id" class="floating-label">
-              <span>Student ID</span>
-              <input type="text" id="student_id" name="student_id" class="input" placeholder="24254XXXXX" required>
-            </label>
+            {% endif %}
+            {% if form_error %}
+          <div role="alert" class="alert alert-error alert-soft">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{{ form_error }}</span>
           </div>
+          {% endif %}
 
-          <div class="mb-4">
-            <label for="password" class="input">
-              <input type="password" id="password" name="password" class="grow" required>
-                  <label class="swap swap-rotate" onclick="showPassword()">
-                    <!-- this hidden checkbox controls the state -->
-                    <input type="checkbox" />
+            {% for message in messages %}
+            {% if "login" in message.tags %}
+            <div role="alert" class="alert alert-error alert-soft mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-xs md:text-sm">{{ message }}</span>
+            </div>
+            {% endif %}
+            {% endfor %}
 
-                    <!-- eye-open icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 swap-on">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                              </svg>
 
-                    <!-- eye-shut icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 swap-off">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-                              </svg>
-                  </label>
-            </label>
-          </div>
+            <!-- Email -->
+            <input
+                class="text-xs mt-2 w-full rounded border bg-gray-100 border-gray-300 px-2 py-2 focus:outline-none focus:border-gray-400 active:outline-none"
+                id="student_id" name="student_id" placeholder="Student ID" required>
+            {% for error in form.login.errors %}
+            <p class="text-xs mt-1 text-red-500 md:text-sm">{{ error }}</p>
+            {% endfor %}
 
-          <div class="mb-4">
-            <button type="submit" class="btn btn-primary w-full" onclick="showSpinner(event)">
-              <span id="btnText">Login</span>
-              <span class="loading loading-spinner" id="spinner" style="display: none;"></span>
+            <!-- Password  -->
+            <div class="w-full mt-2">
+                <div class="flex items-center border rounded bg-gray-100 border-gray-300 focus-within:border-gray-400">
+                    <input class="text-xs w-full bg-transparent px-2 py-2 focus:outline-none" name="password"
+                        id="password" placeholder="Password" type="password" required autocomplete="new-password"
+                        minlength="8" />
+
+                    <!-- Swap visibility toggle -->
+                    <label class="swap swap-rotate px-2 cursor-pointer flex-shrink-0">
+                        <input type="checkbox" data-target="password" onchange="togglePassword(this)" />
+
+                        <!-- Show Icon (eye open) -->
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-5 swap-on">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+
+                        <!-- Hide Icon (eye closed) -->
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-5 swap-off">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                        </svg>
+                    </label>
+                </div>
+
+                <!-- Error message -->
+                {% for error in form.password2.errors %}
+                <p class="text-xs mt-1 text-red-500 md:text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+
+            <a href="" class="link link-hover text-xs text-accent cursor-pointer mt-3">Forgot password?</a>
+
+            <button type="submit" class="btn btn-primary mt-4 font-medium" id="submitBtn">
+                <span class="loading loading-spinner" id="spinner" style="display: none;"></span>
+                <span id="btnText">Log In</span>
             </button>
-          </div>
-          </div>            
         </form>
-      </div>
-     
+
+        <!-- Social buttons -->
+
     </div>
-</body>
+    <div class="bg-white border border-gray-300 text-center w-80 md:w-96 py-4">
+        <span class="text-sm">Don't have an account?</span>
+        <a href="{% url 'register' %}" class="link link-hover text-accent text-sm font-semibold">Sign up</a>
+    </div>
+</div>
+
 <script>
-  function showPassword() {
-    const passwordInput = document.getElementById('password');
-    const eyeIcon = document.querySelector('.swap input[type="checkbox"]');
-    
-    if (eyeIcon.checked) {
-      passwordInput.type = 'text'; // Show password
-    } else {
-      passwordInput.type = 'password'; // Hide password
+    // Global password visibility toggle
+    function togglePassword(checkbox) {
+        const targetId = checkbox.getAttribute('data-target');
+        const passwordInput = document.getElementById(targetId);
+
+        if (passwordInput) {
+            passwordInput.type = checkbox.checked ? 'text' : 'password';
+        }
     }
-  }
 
-  function showSpinner(event) {
-    const form = event.target.closest('form');
-    const spinner = document.getElementById('spinner');
-    const btnText = document.getElementById('btnText');
-    spinner.style.display = 'block';
-    btnText.style.display = 'none'; // Hide the button text
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get form and button elements
+        const forms = document.querySelectorAll('form');
+        const button = document.getElementById('submitBtn');
+        const spinner = document.getElementById('spinner');
+        const btnText = document.getElementById('btnText');
 
-    event.preventDefault(); // Prevent form submission for demonstration
-    setTimeout(() => {
-      //spinner.style.display = 'none'; // Hide spinner after 2 seconds
-      form.submit(); // Submit the form after showing the spinner
-    }, 2000);
-    
-  }
+        if (forms.length > 0 && button && spinner && btnText) {
+            const form = forms[0];
+            form.addEventListener('submit', function (event) {
+                // Only show spinner if form is valid
+                if (form.checkValidity()) {
+                    button.classList.add('opacity-50', 'cursor-not-allowed');
+                    spinner.style.display = 'inline-block';
+                    btnText.style.display = 'none';
+                }
+            });
+        }
+    });
 
 </script>
+
 </html>

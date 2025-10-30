@@ -3,7 +3,7 @@
 {% block content %}
         <h1 class="text-3xl font-bold mb-6">Manage Pre-Approved Students</h1>
         <button class="btn" onClick="document.getElementById('students-modal').showModal()">Upload Students</button>
-        
+        <a href="{% url 'delete-students' %}" class="btn btn-error">Delete</a>
         <!-- Modal -->
         <dialog id="students-modal" class="modal modal-bottom sm:modal-middle">
           <div class="modal-box">

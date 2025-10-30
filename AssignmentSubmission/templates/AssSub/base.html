@@ -8,15 +8,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="manifest" href="{% static 'manifest.json' %}">
-<meta name="theme-color" content="#1e40af">
+  <meta name="theme-color" content="#1e40af">
   {% tailwind_css %}
+
+  <style>
+    /* Multi-step form animations */
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOutLeft {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+    }
+
+    /* Apply initial animation to form container */
+    .form-step-container {
+      animation: slideInRight 0.4s ease-out;
+    }
+
+    /* HTMX swap animations */
+    #register-content.htmx-swapping {
+      animation: slideOutLeft 0.3s ease-in;
+    }
+
+    #register-content.htmx-settling {
+      animation: slideInRight 0.4s ease-out;
+    }
+  </style>
 </head>
 
 <body class="font-nunito">
-  <div class="lg:mx-8 mx-auto">
-    <div class="flex flex-col items-center justify-center h-screen">
-      <div class="mx-4 md:p-8" id="register-content">
-    
+  <div class="h-screen bg-gray-50 flex flex-col justify-center items-center">
+
+    <div id="register-content" class="form-step-container">
+      <!--     
         <div class="card base-100 shadow-lg w-80 rounded-lg bg-white">
           <form
           id="register-form-1"
@@ -54,91 +95,189 @@
             </div>
             </div>            
           </form>
-        </div>
+        </div> -->
+      <div class="bg-white border border-gray-300 w-80 md:w-96 py-8 flex items-center flex-col mb-3">
+        <p class="font-bold text-2xl">Sign In</p>
+        <!-- <p class="text-sm text-center text-gray-500">Login to see photos and videos from your friends.</p> -->
+
+
+        <form class="mt-8 w-64 md:w-80 flex flex-col" method="post" id="register-form-1" method="post"
+          hx-post="{% url 'check-id' %}" hx-swap="outerHTML swap:0.3s settle:0.4s" hx-trigger="submit delay:2000ms"
+          hx-target="#register-content">
+          {% csrf_token %}
+
+          <!-- Non-field errors (e.g. password mismatch) -->
+          {% if form_error %}
+          <div role="alert" class="alert alert-error alert-soft">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{{ form_error }}</span>
+          </div>
+          {% endif %}
+
+
+          <!-- Student ID -->
+          <input
+            class="text-xs mt-2 w-full rounded border bg-gray-100 border-gray-300 px-2 py-2 focus:outline-none focus:border-gray-400 active:outline-none"
+            id="student_id" name="student_id" placeholder="Student ID" required>
+          {% for error in form.login.errors %}
+          <p class="text-xs mt-1 text-red-500 md:text-sm">{{ error }}</p>
+          {% endfor %}
+
+
+          <a href="" class="link link-hover text-xs text-accent cursor-pointer mt-3">Forgot password?</a>
+
+          <button type="submit" class="btn btn-primary mt-4 font-medium" id="submitBtn">
+            <span class="loading loading-spinner" id="spinner" style="display: none;"></span>
+            <span id="btnText">Log In</span>
+          </button>
+        </form>
+
+        <!-- Social buttons -->
 
       </div>
+
+      <div class="bg-white border border-gray-300 text-center w-80 md:w-96 py-4">
+        <span class="text-sm">Don't have an account?</span>
+        <a href="{% url 'register' %}" class="link link-hover text-accent text-sm font-semibold">Sign up</a>
+      </div>
+
     </div>
+
   </div>
 </body>
+
+
 <script>
-  
-  function showPassword() {
-    const passwordInput = document.getElementById('password');
-    const eyeIcon = document.querySelector('.swap input[type="checkbox"]');
-    
-    if (eyeIcon.checked) {
-      passwordInput.type = 'text'; // Show password
+
+  // Global password visibility toggle
+  function togglePassword(checkbox) {
+    const targetId = checkbox.getAttribute('data-target');
+
+    // If data-target is "password", toggle both password1 and password2
+    if (targetId === 'password') {
+      const password1 = document.getElementById('password1');
+      const password2 = document.getElementById('password2');
+
+      if (checkbox.checked) {
+        if (password1) password1.type = 'text';
+        if (password2) password2.type = 'text';
+      } else {
+        if (password1) password1.type = 'password';
+        if (password2) password2.type = 'password';
+      }
     } else {
-      passwordInput.type = 'password'; // Hide password
+      // For single password fields
+      const passwordInput = document.getElementById(targetId);
+      if (passwordInput) {
+        passwordInput.type = checkbox.checked ? 'text' : 'password';
+      }
     }
   }
 
-  function showSpinner(event) {
-    const form = event.target.closest('form');
-    const spinner = document.getElementById('spinner');
-    const btnText = document.getElementById('btnText');
-    spinner.style.display = 'block';
-    btnText.style.display = 'none'; // Hide the button text
-    
+  // Global function to handle form submission spinner
+  function handleFormSubmit(formId, buttonId, spinnerId, textId) {
+    const form = document.getElementById(formId);
+    const button = document.getElementById(buttonId);
+    const spinner = document.getElementById(spinnerId);
+    const btnText = document.getElementById(textId);
+
+    if (form && button && spinner && btnText) {
+      form.addEventListener('submit', function (event) {
+        // Only show spinner if form is valid
+        if (form.checkValidity()) {
+          button.classList.add('opacity-50', 'cursor-not-allowed');
+          spinner.style.display = 'inline-block';
+          btnText.style.display = 'none';
+        }
+      });
+    }
   }
 
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("otp-form");
-      const inputs = [...form.querySelectorAll("input[type=text]")];
+  // OTP Input handler
+  function setupOTPInputs() {
+    const inputs = document.querySelectorAll('#otp-inputs input[type="text"]');
+    if (inputs.length === 0) return;
 
-      const handleKeyDown = (e) => {
-        if (
-          !/^[0-9]{1}$/.test(e.key) &&
-          e.key !== "Backspace" &&
-          e.key !== "Delete" &&
-          e.key !== "Tab" &&
-          !e.metaKey
-        ) {
-          e.preventDefault();
-        }
+    inputs.forEach((input, index) => {
+      // Handle input
+      input.addEventListener('input', function (e) {
+        const value = e.target.value;
 
-        if (e.key === "Delete" || e.key === "Backspace") {
-          const index = inputs.indexOf(e.target);
-          if (index > 0) {
-            inputs[index - 1].value = "";
-            inputs[index - 1].focus();
-          }
-        }
-      };
-
-      const handleInput = (e) => {
-        const { target } = e;
-        const index = inputs.indexOf(target);
-        if (target.value) {
-          if (index < inputs.length - 1) {
-            inputs[index + 1].focus();
-          }
-        }
-      };
-
-      const handleFocus = (e) => {
-        e.target.select();
-      };
-
-      const handlePaste = (e) => {
-        e.preventDefault();
-        const text = e.clipboardData.getData("text");
-        if (!new RegExp(`^[0-9]{${inputs.length}}$`).test(text)) {
+        // Only allow numbers
+        if (!/^\d*$/.test(value)) {
+          e.target.value = '';
           return;
         }
-        const digits = text.split("");
-        inputs.forEach((input, index) => (input.value = digits[index]));
-      };
 
-      inputs.forEach((input) => {
-        input.addEventListener("input", handleInput);
-        input.addEventListener("keydown", handleKeyDown);
-        input.addEventListener("focus", handleFocus);
-        input.addEventListener("paste", handlePaste);
+        // Move to next input if value entered
+        if (value && index < inputs.length - 1) {
+          inputs[index + 1].focus();
+        }
+      });
+
+      // Handle keydown for backspace
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+          inputs[index - 1].focus();
+          inputs[index - 1].value = '';
+        }
+
+        // Handle left/right arrow keys
+        if (e.key === 'ArrowLeft' && index > 0) {
+          inputs[index - 1].focus();
+        }
+        if (e.key === 'ArrowRight' && index < inputs.length - 1) {
+          inputs[index + 1].focus();
+        }
+      });
+
+      // Handle paste
+      input.addEventListener('paste', function (e) {
+        e.preventDefault();
+        const pastedData = e.clipboardData.getData('text').trim();
+
+        // Check if pasted data is 6 digits
+        if (/^\d{6}$/.test(pastedData)) {
+          pastedData.split('').forEach((char, i) => {
+            if (inputs[i]) {
+              inputs[i].value = char;
+            }
+          });
+          // Focus last input
+          inputs[inputs.length - 1].focus();
+        }
+      });
+
+      // Select all on focus
+      input.addEventListener('focus', function (e) {
+        e.target.select();
       });
     });
-  </script>
- <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js"></script>
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', function () {
+    handleFormSubmit('register-form-1', 'submitBtn', 'spinner', 'btnText');
+    setupOTPInputs();
+  });
+
+  // Re-initialize after HTMX swaps
+  document.body.addEventListener('htmx:afterSwap', function (e) {
+    // Handle different form IDs in multi-step form
+    setTimeout(() => {
+      handleFormSubmit('register-form-1', 'submitBtn', 'spinner', 'btnText');
+      handleFormSubmit('register-form-2', 'submitBtn', 'spinner', 'btnText');
+      handleFormSubmit('otp-form', 'submitBtn', 'spinner', 'btnText');
+      setupOTPInputs();
+    }, 100);
+  });
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js"></script>
+
 </html>

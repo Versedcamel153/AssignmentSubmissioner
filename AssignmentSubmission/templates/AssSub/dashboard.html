@@ -26,7 +26,7 @@
 <section class="bg-white rounded-xl shadow-sm border border-slate-200 mx-4 p-8 mb-8">
     <!-- Mobile cards -->
     <p class="font-semibold text-center mb-4">Pending Submissions</p>
-    <div class="grid grid-cols-1 md:grid-cols-3 md:gap-8 ">
+    <div class="grid grid-cols-1 md:grid-cols-3 md:gap-8 form-step-container ">
     {% for submission in open_submissions %}
         <div class="flex hover:shadow-xl border-amber-500 transition-all duration-200 hover:scale-[1.01] cursor-pointer items-center relative justify-between p-4 border rounded-lg shadow-sm bg-white mb-6"
             onclick="document.getElementById('modal-{{ submission.id }}').showModal()">

@@ -1,0 +1,442 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Django Tailwind</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="manifest" href="{% static 'manifest.json' %}">
+  <meta name="theme-color" content="#1e40af">
+  {% tailwind_css %}
+
+  <style>
+    /* Multi-step form animations */
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOutLeft {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+    }
+
+    /* Apply initial animation to form container */
+    .form-step-container {
+      animation: slideInRight 0.4s ease-out;
+    }
+
+    /* HTMX swap animations */
+    #register-content.htmx-swapping {
+      animation: slideOutLeft 0.3s ease-in;
+    }
+
+    #register-content.htmx-settling {
+      animation: slideInRight 0.4s ease-out;
+    }
+
+    /* Horizontal Stepper Styles */
+    .stepper-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      position: relative;
+      padding: 0 0.5rem;
+    }
+
+    .stepper-step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      text-align: center;
+    }
+
+    /* Connecting line between steps */
+    .stepper-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 1rem;
+      left: calc(50% + 1.25rem);
+      right: calc(-50% + 1.25rem);
+      height: 2px;
+      background: #e5e7eb;
+      z-index: 0;
+    }
+
+    .stepper-step.completed:not(:last-child)::after {
+      background: #10b981;
+    }
+
+    .stepper-step.active:not(:last-child)::after {
+      background: linear-gradient(to right, #10b981 0%, #10b981 50%, #e5e7eb 50%, #e5e7eb 100%);
+    }
+
+    .stepper-circle {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+      transition: all 0.3s ease;
+      margin-bottom: 0.5rem;
+    }
+
+    .stepper-step.active .stepper-circle {
+      border-color: #3b82f6;
+      background: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    .stepper-step.completed .stepper-circle {
+      border-color: #10b981;
+      background: #10b981;
+    }
+
+    .stepper-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #9ca3af;
+      transition: color 0.3s ease;
+    }
+
+    .stepper-step.active .stepper-label {
+      color: #3b82f6;
+    }
+
+    .stepper-step.completed .stepper-label {
+      color: #10b981;
+    }
+
+    @media (max-width: 640px) {
+      .stepper-label {
+        font-size: 0.625rem;
+      }
+
+      .stepper-circle {
+        width: 1.75rem;
+        height: 1.75rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="font-nunito">
+  <div class="h-screen bg-gray-50 flex flex-col justify-center items-center p-4">
+    <!-- Progress Stepper -->
+        <div class="w-full px-6 mb-6 md:mb-12">
+          <div id="progress-stepper" class="stepper-container">
+            <div class="stepper-step active" data-step="1">
+              <div class="stepper-circle">
+                <svg class="w-4 h-4 text-white hidden check-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+                <span class="text-sm font-bold step-number text-gray-400">1</span>
+              </div>
+              <span class="stepper-label">Account</span>
+            </div>
+
+            <div class="stepper-step" data-step="2">
+              <div class="stepper-circle">
+                <svg class="w-4 h-4 text-white hidden check-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+                <span class="text-sm font-bold step-number text-gray-400">2</span>
+              </div>
+              <span class="stepper-label">Email</span>
+            </div>
+
+            <div class="stepper-step" data-step="3">
+              <div class="stepper-circle">
+                <svg class="w-4 h-4 text-white hidden check-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+                <span class="text-sm font-bold step-number text-gray-400">3</span>
+              </div>
+              <span class="stepper-label">Verify</span>
+            </div>
+
+            <div class="stepper-step" data-step="4">
+              <div class="stepper-circle">
+                <svg class="w-4 h-4 text-white hidden check-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+                <span class="text-sm font-bold step-number text-gray-400">4</span>
+              </div>
+              <span class="stepper-label">Password</span>
+            </div>
+          </div>
+        </div>
+    <div id="register-content" class="form-step-container">
+      <div class="bg-white border border-gray-300 w-80 md:w-96 py-8 flex items-center flex-col mb-3">
+
+        <p class="font-bold text-2xl">Find Your Account</p>
+        <p class="text-sm text-center mx-4 text-gray-500">Enter your Student ID to locate your account in our system.
+          We'll use it to confirm your registration details.</p>
+
+
+        <form class="mt-8 w-64 md:w-80 flex flex-col" method="post" id="register-form-1" method="post"
+          hx-post="{% url 'check-id' %}" hx-swap="outerHTML swap:0.3s settle:0.4s" hx-trigger="submit delay:2000ms"
+          hx-target="#register-content">
+          {% csrf_token %}
+
+          <!-- Non-field errors (e.g. password mismatch) -->
+          {% if form_error %}
+          <div role="alert" class="alert alert-error alert-soft">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{{ form_error }}</span>
+          </div>
+          {% endif %}
+
+
+          <!-- Student ID -->
+          <input
+            class="text-xs mt-2 w-full rounded border bg-gray-100 border-gray-300 px-2 py-2 focus:outline-none focus:border-gray-400 active:outline-none"
+            id="student_id" name="student_id" placeholder="Student ID" required>
+          {% for error in form.login.errors %}
+          <p class="text-xs mt-1 text-red-500 md:text-sm">{{ error }}</p>
+          {% endfor %}
+
+
+          <a href="" class="link link-hover text-xs text-accent cursor-pointer mt-3">Forgot password?</a>
+
+          <button type="submit" class="btn btn-primary mt-4 font-medium" id="submitBtn">
+            <span class="loading loading-spinner" id="spinner" style="display: none;"></span>
+            <span id="btnText">Continue</span>
+          </button>
+        </form>
+
+        <!-- Social buttons -->
+
+      </div>
+
+      <div class="bg-white border border-gray-300 text-center w-80 md:w-96 py-4">
+        <span class="text-sm">Already have an account?</span>
+        <a href="{% url 'login' %}" class="link link-hover text-accent text-sm font-semibold">Login</a>
+      </div>
+
+    </div>
+
+  </div>
+</body>
+
+
+<script>
+
+  // Global password visibility toggle
+  function togglePassword(checkbox) {
+    const targetId = checkbox.getAttribute('data-target');
+
+    // If data-target is "password", toggle both password1 and password2
+    if (targetId === 'password') {
+      const password1 = document.getElementById('password1');
+      const password2 = document.getElementById('password2');
+
+      if (checkbox.checked) {
+        if (password1) password1.type = 'text';
+        if (password2) password2.type = 'text';
+      } else {
+        if (password1) password1.type = 'password';
+        if (password2) password2.type = 'password';
+      }
+    } else {
+      // For single password fields
+      const passwordInput = document.getElementById(targetId);
+      if (passwordInput) {
+        passwordInput.type = checkbox.checked ? 'text' : 'password';
+      }
+    }
+  }
+
+  // Global function to handle form submission spinner
+  function handleFormSubmit(formId, buttonId, spinnerId, textId) {
+    const form = document.getElementById(formId);
+    const button = document.getElementById(buttonId);
+    const spinner = document.getElementById(spinnerId);
+    const btnText = document.getElementById(textId);
+
+    if (form && button && spinner && btnText) {
+      form.addEventListener('submit', function (event) {
+        // Only show spinner if form is valid
+        if (form.checkValidity()) {
+          button.classList.add('opacity-50', 'cursor-not-allowed');
+          spinner.style.display = 'inline-block';
+          btnText.style.display = 'none';
+        }
+      });
+    }
+  }
+
+  // OTP Input handler
+  function setupOTPInputs() {
+    const inputs = document.querySelectorAll('#otp-inputs input[type="text"]');
+    if (inputs.length === 0) return;
+
+    inputs.forEach((input, index) => {
+      // Handle input
+      input.addEventListener('input', function (e) {
+        const value = e.target.value;
+
+        // Only allow numbers
+        if (!/^\d*$/.test(value)) {
+          e.target.value = '';
+          return;
+        }
+
+        // Move to next input if value entered
+        if (value && index < inputs.length - 1) {
+          inputs[index + 1].focus();
+        }
+      });
+
+      // Handle keydown for backspace
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+          inputs[index - 1].focus();
+          inputs[index - 1].value = '';
+        }
+
+        // Handle left/right arrow keys
+        if (e.key === 'ArrowLeft' && index > 0) {
+          inputs[index - 1].focus();
+        }
+        if (e.key === 'ArrowRight' && index < inputs.length - 1) {
+          inputs[index + 1].focus();
+        }
+      });
+
+      // Handle paste
+      input.addEventListener('paste', function (e) {
+        e.preventDefault();
+        const pastedData = e.clipboardData.getData('text').trim();
+
+        // Check if pasted data is 6 digits
+        if (/^\d{6}$/.test(pastedData)) {
+          pastedData.split('').forEach((char, i) => {
+            if (inputs[i]) {
+              inputs[i].value = char;
+            }
+          });
+          // Focus last input
+          inputs[inputs.length - 1].focus();
+        }
+      });
+
+      // Select all on focus
+      input.addEventListener('focus', function (e) {
+        e.target.select();
+      });
+    });
+  }
+
+  // Update progress stepper
+  function updateTimeline(currentStep) {
+    const steps = document.querySelectorAll('.stepper-step');
+
+    steps.forEach((step, index) => {
+      const stepNumber = parseInt(step.getAttribute('data-step'));
+      const checkIcon = step.querySelector('.check-icon');
+      const stepNum = step.querySelector('.step-number');
+
+      // Remove all state classes
+      step.classList.remove('active', 'completed');
+
+      if (stepNumber < currentStep) {
+        // Mark as completed
+        step.classList.add('completed');
+        if (checkIcon) checkIcon.classList.remove('hidden');
+        if (stepNum) stepNum.classList.add('hidden');
+      } else if (stepNumber === currentStep) {
+        // Mark as active
+        step.classList.add('active');
+        if (checkIcon) checkIcon.classList.add('hidden');
+        if (stepNum) {
+          stepNum.classList.remove('hidden');
+          stepNum.classList.remove('text-gray-400');
+          stepNum.classList.add('text-white');
+        }
+      } else {
+        // Future step - reset to default
+        if (checkIcon) checkIcon.classList.add('hidden');
+        if (stepNum) {
+          stepNum.classList.remove('hidden');
+          stepNum.classList.remove('text-white');
+          stepNum.classList.add('text-gray-400');
+        }
+      }
+    });
+  }
+
+  // Detect current step from loaded content
+  function detectCurrentStep() {
+    // Check which form is present in the DOM
+    if (document.getElementById('register-form-1')) return 1;
+    if (document.getElementById('register-form-2')) return 2;
+    // For password form, check for password1 input
+    const passwordInput = document.getElementById('password1');
+    const otpInputs = document.getElementById('otp-inputs');
+
+    if (passwordInput && document.getElementById('password2')) return 4;
+    if (otpInputs || document.getElementById('otp-form')) return 3;
+
+    return 1; // Default to step 1
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', function () {
+    handleFormSubmit('register-form-1', 'submitBtn', 'spinner', 'btnText');
+    setupOTPInputs();
+    updateTimeline(detectCurrentStep());
+  });
+
+  // Re-initialize after HTMX swaps
+  document.body.addEventListener('htmx:afterSwap', function (e) {
+    // Handle different form IDs in multi-step form
+    setTimeout(() => {
+      handleFormSubmit('register-form-1', 'submitBtn', 'spinner', 'btnText');
+      handleFormSubmit('register-form-2', 'submitBtn', 'spinner', 'btnText');
+      handleFormSubmit('otp-form', 'submitBtn', 'spinner', 'btnText');
+      setupOTPInputs();
+      updateTimeline(detectCurrentStep());
+    }, 100);
+  });
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js"></script>
+
+</html>

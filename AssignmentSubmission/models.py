@@ -40,11 +40,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     
     def __repr__(self):
         return f"{self.student_id} - {self.email}"
+        
+class RegistrationStage(models.TextChoices):
+    id_entered = "id_entered"
+    otp_sent = "otp_sent"
+    otp_verified = "otp_verified"
+    password_set = "password_set"
+    completed = "completed"
 
 class PreApprovedStudents(models.Model):
     name = models.CharField(max_length=50)
     student_id = models.CharField(max_length=15, unique=True)
     email = models.EmailField(null=True, blank=True)
+    registration_stage = models.CharField(max_length= 15, choices=RegistrationStage.choices, blank=True, default=None, null=True)
     is_registered = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     is_verified = models.BooleanField(default=False)

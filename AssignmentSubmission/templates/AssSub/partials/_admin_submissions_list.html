@@ -1,6 +1,137 @@
+
+  <style>
+    /* Multi-step form animations */
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOutLeft {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+    }
+
+    /* Apply initial animation to form container */
+    .form-step-container {
+      animation: slideInRight 0.4s ease-out;
+    }
+
+    /* HTMX swap animations */
+    #register-content.htmx-swapping {
+      animation: slideOutLeft 0.3s ease-in;
+    }
+
+    #register-content.htmx-settling {
+      animation: slideInRight 0.4s ease-out;
+    }
+
+    /* Horizontal Stepper Styles */
+    .stepper-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      position: relative;
+      padding: 0 0.5rem;
+    }
+
+    .stepper-step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      text-align: center;
+    }
+
+    /* Connecting line between steps */
+    .stepper-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 1rem;
+      left: calc(50% + 1.25rem);
+      right: calc(-50% + 1.25rem);
+      height: 2px;
+      background: #e5e7eb;
+      z-index: 0;
+    }
+
+    .stepper-step.completed:not(:last-child)::after {
+      background: #10b981;
+    }
+
+    .stepper-step.active:not(:last-child)::after {
+      background: linear-gradient(to right, #10b981 0%, #10b981 50%, #e5e7eb 50%, #e5e7eb 100%);
+    }
+
+    .stepper-circle {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+      transition: all 0.3s ease;
+      margin-bottom: 0.5rem;
+    }
+
+    .stepper-step.active .stepper-circle {
+      border-color: #3b82f6;
+      background: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    .stepper-step.completed .stepper-circle {
+      border-color: #10b981;
+      background: #10b981;
+    }
+
+    .stepper-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #9ca3af;
+      transition: color 0.3s ease;
+    }
+
+    .stepper-step.active .stepper-label {
+      color: #3b82f6;
+    }
+
+    .stepper-step.completed .stepper-label {
+      color: #10b981;
+    }
+
+    @media (max-width: 640px) {
+      .stepper-label {
+        font-size: 0.625rem;
+      }
+
+      .stepper-circle {
+        width: 1.75rem;
+        height: 1.75rem;
+      }
+    }
+  </style>
 <div class="grid grid-cols-1 md:grid-cols-3 md:gap-8 ">
     {% for submission in submissions %}
-    <div class="flex md:point hover:shadow-xl transition-all duration-200 hover:scale-[1.01] items-center relative justify-between p-4 border rounded-lg shadow-sm bg-white mb-6
+    <div class="flex md:point hover:shadow-xl transition-all duration-200 hover:scale-[1.01] items-center relative justify-between p-4 border rounded-lg shadow-sm bg-white mb-6 form-step-container 
             {% if submission.is_open %} cursor-pointer {% else %} cursor-not-allowed {% endif %}"
             onclick="if (window.innerWidth < 768) document.getElementById('modal-{{ submission.id }}').showModal()">
 

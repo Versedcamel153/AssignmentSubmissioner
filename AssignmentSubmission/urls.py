@@ -23,7 +23,7 @@ from .views import (
     dashboard, submissionCreation, admin_dashboard, 
     index, close_submission, download_submission_zip,
     check_id, send_otp, verify_otp, set_password,
-    manage_students, manage_courses
+    manage_students, manage_courses, delete_students
     )
 
 urlpatterns = [
@@ -48,5 +48,6 @@ urlpatterns = [
 # ] 
     path('students/', manage_students, name='manage-students'),
     path('courses/', manage_courses, name='manage-courses'),
+    path('students/delete/', delete_students, name='delete-students'),
 ]
 

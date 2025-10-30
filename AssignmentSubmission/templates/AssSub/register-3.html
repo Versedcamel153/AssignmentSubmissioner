@@ -1,116 +1,154 @@
-{% load static tailwind_tags %}
-<!DOCTYPE html>
-<html lang="en">
+<div id="register-content" class="form-step-container">
 
-<head>
-  <title>Django Tailwind</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  {% tailwind_css %}
-</head>
+  <div class="bg-white border border-gray-300 w-80 md:w-96 py-8 flex items-center flex-col mb-3">
+    <p class="font-bold text-2xl">Enter Verification Code</p>
+    <p class="text-sm mx-4 text-slate-500 text-center">We've sent a 6-digit code to your email
+      <a class="link link-hover text-accent underline">{{ student.email }}</a>
+      Enter it below to verify your account ownership.
+    </p>
 
-<body class="bg-gray-50 font-serif leading-normal tracking-normal">
-  <div class="container mx-auto">
-    <section class="flex flex-col items-center justify-center h-screen">
-      <div class="card base-100 shadow-lg w-96 p-4 rounded-lg bg-white">
-        <form method="post" action="{% url 'register' %}" class="space-y-4">
-          {% csrf_token %}
-          <div class="card-body">
-            
-          <p class="text-3xl text-center mb-8">Registration</p>
-          {% if form.errors %}
-                  <ul>
-                      {% for field in form %}
-                          {% for error in field.errors %}
-                            <div role="alert" class="alert alert-error alert-soft">
-                              <span>{{ error }}</span>
-                            </div>
-                          {% endfor %}
-                      {% endfor %}
-                      {% for error in form.non_field_errors %}
-                        <div role="alert" class="alert alert-error alert-soft">
-                          <span>{{ error }}</span>
-                        </div>
-                      {% endfor %}
-                  </ul>
-          {% endif %}
-          
-          <div class="mb-4">
-            <label for="student_id" class="floating-label">
-              <span>Student ID</span>
-              <input type="text" id="student_id" name="student_id" class="input" placeholder="24254XXXXX" required>
-            </label>
-          </div>
+    <form class="mt-8 w-64 md:w-80 flex flex-col" method="post" id="otp-form" hx-post="{% url 'verify-otp' %}"
+      hx-swap="outerHTML swap:0.3s settle:0.4s" hx-target="#register-content" hx-trigger="submit delay:2000ms">
+      {% csrf_token %}
 
-          <div class="mb-4">
-            <label for="email" class="floating-label">
-              <span>Email</span>
-              <input type="email" id="email" name="email" class="input" placeholder="student@example.com" required>
-            </label>
-          </div>
-
-          <div class="mb-4">
-            <label for="password" class="input">
-              <input type="password" id="password" name="password" class="grow" required>
-                  <label class="swap swap-rotate" onclick="showPassword()">
-                    <!-- this hidden checkbox controls the state -->
-                    <input type="checkbox" />
-
-                    <!-- eye-open icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 swap-on">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                              </svg>
-
-                    <!-- eye-shut icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 swap-off">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-                              </svg>
-                  </label>
-            </label>
-          </div>
-
-          <div class="mb-4">
-            <button type="submit" class="btn btn-primary w-full" onclick="showSpinner(event)">
-              <span id="btnText">Register</span>
-              <span class="loading loading-spinner" id="spinner" style="display: none;"></span>
-            </button>
-          </div>
-          </div>            
-        </form>
+      <!-- Non-field errors (e.g. password mismatch) -->
+      {% if form_error %}
+      <div role="alert" class="alert alert-error alert-soft">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ form_error }}</span>
       </div>
-     
-    </section>
+      {% endif %}
+      <input type="hidden" id="student_id" name="student_id" value="{{ student.student_id }}">
+      <input type="hidden" id="student_email" name="student_email" value="{{ student.email }}">
+      <input type="hidden" id="email" name="email" value="{{ student.email }}">
+
+      <!-- OTP Input -->
+      <div class="flex gap-2 justify-center my-6" id="otp-inputs">
+        {% for i in "123456" %}
+        <input type="text" maxlength="1" name="otp-{{ forloop.counter }}" autocomplete="off" inputmode="numeric"
+          pattern="[0-9]"
+          class="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-semibold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all hover:border-gray-400 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:border-blue-400" />
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn btn-primary mt-4 font-medium w-full" id="submitBtn">
+        <span class="loading loading-spinner" id="spinner" style="display: none;"></span>
+        <span id="btnText">Verify</span>
+      </button>
+    </form>
+
   </div>
-</body>
 
-</html>
+  <div class="bg-white border border-gray-300 text-center w-80 md:w-96 py-4">
+    <span class="text-sm">Didn't get the code?</span>
+    <span id="resendLink"
+      class="link link-hover text-accent text-sm font-semibold pointer-events-none cursor-not-allowed opacity-50">
+      <span id="resendText">Resend code in <span id="countdown">60</span>s</span>
+    </span>
+
+  </div>
+
+</div>
 <script>
-  function showPassword() {
-    const passwordInput = document.getElementById('password');
-    const eyeIcon = document.querySelector('.swap input[type="checkbox"]');
-    
-    if (eyeIcon.checked) {
-      passwordInput.type = 'text'; // Show password
-    } else {
-      passwordInput.type = 'password'; // Hide password
+  document.body.addEventListener('htmx:configRequest', (event) => {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+    if (csrfToken) {
+      event.detail.headers['X-CSRFToken'] = csrfToken;
     }
+  });
+
+  // Countdown timer for resend OTP - run once only
+  let countdownInitialized = false;
+
+  if (!countdownInitialized) {
+    countdownInitialized = true;
+
+    (function () {
+      let timeLeft = 60;
+      let timer = null;
+      let isCountdownActive = false;
+
+      function startCountdown() {
+        // Prevent multiple countdowns
+        if (isCountdownActive) {
+          return;
+        }
+
+        // Clear any existing timer
+        if (timer) {
+          clearInterval(timer);
+        }
+
+        isCountdownActive = true;
+        timeLeft = 60;
+
+        const resendLink = document.getElementById('resendLink');
+        const resendText = document.getElementById('resendText');
+
+        // Disable the link immediately
+        if (resendLink) {
+          resendLink.classList.add('pointer-events-none', 'opacity-50', 'cursor-not-allowed');
+          resendLink.classList.remove('cursor-pointer');
+          // Remove HTMX attributes to prevent any requests
+          resendLink.removeAttribute('hx-post');
+          resendLink.removeAttribute('hx-include');
+          resendLink.removeAttribute('hx-swap');
+          resendLink.removeAttribute('hx-target');
+        }
+
+        // Update the text
+        if (resendText) {
+          resendText.innerHTML = 'Resend code in <span id="countdown">60</span>s';
+        }
+
+        timer = setInterval(() => {
+          timeLeft--;
+
+          const currentCountdown = document.getElementById('countdown');
+          if (currentCountdown) {
+            currentCountdown.textContent = timeLeft;
+          }
+
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            isCountdownActive = false;
+
+            const currentLink = document.getElementById('resendLink');
+            const currentText = document.getElementById('resendText');
+
+            if (currentLink) {
+              currentLink.classList.remove('pointer-events-none', 'opacity-50', 'cursor-not-allowed');
+              currentLink.classList.add('cursor-pointer');
+              // Re-enable HTMX attributes
+              currentLink.setAttribute('hx-post', "{% url 'send-otp' %}");
+              currentLink.setAttribute('hx-include', '#student_email, #student_id, #email');
+              currentLink.setAttribute('hx-swap', 'outerHTML swap:0.3s settle:0.4s');
+              currentLink.setAttribute('hx-target', '#register-content');
+              // Reinitialize HTMX for this element
+              htmx.process(currentLink);
+            }
+            if (currentText) {
+              currentText.textContent = 'Resend code';
+            }
+          }
+        }, 1000);
+      }
+
+      // Start countdown on page load
+      startCountdown();
+
+      // Start countdown when link is clicked (after countdown expires)
+      document.body.addEventListener('click', (event) => {
+        if (event.target.closest('#resendLink')) {
+          const resendLink = document.getElementById('resendLink');
+          // Only allow if countdown is not active
+          if (resendLink && !isCountdownActive) {
+            startCountdown();
+          }
+        }
+      });
+    })();
   }
-
-  function showSpinner(event) {
-    const form = event.target.closest('form');
-    const spinner = document.getElementById('spinner');
-    const btnText = document.getElementById('btnText');
-    spinner.style.display = 'block';
-    btnText.style.display = 'none'; // Hide the button text
-
-    event.preventDefault(); // Prevent form submission for demonstration
-    setTimeout(() => {
-      //spinner.style.display = 'none'; // Hide spinner after 2 seconds
-      form.submit(); // Submit the form after showing the spinner
-    }, 2000);
-    
-  }
-
 </script>

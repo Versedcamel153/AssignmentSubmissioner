@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import (
     PreApprovedStudents,
+    RegistrationStage,
     Submission,
     StudentSubmission,
     Courses,
@@ -35,17 +36,23 @@ User = get_user_model()
 from django.contrib import messages
 import pandas as pd
 
+
 def upload_students(request):
     students = PreApprovedStudents.objects.all()
     if request.method == "POST":
         uploaded_file = request.FILES.get("file")
 
         if not uploaded_file:
-            messages.error(request, "Please select a file before uploading.", extra_tags="students")
-            return render(request, "AssSub/students.html")
+            messages.error(
+                request, "Please select a file before uploading.", extra_tags="students"
+            )
+            return render(request, "AssSub/students.html", {"students": students})
 
         try:
             df = pd.read_excel(uploaded_file)
+
+            # Debug: Print available columns
+            print(f"Available columns: {df.columns.tolist()}")
 
             # Check required columns
             required_columns = ["INDEX NUMBER", "NAME", "EMAIL"]
@@ -53,46 +60,66 @@ def upload_students(request):
                 if col not in df.columns:
                     messages.error(
                         request,
-                        f"The uploaded file is missing a required column: '{col}'. Please check your file.",
+                        f"The uploaded file is missing a required column: '{col}'. Please check your file. Available columns: {', '.join(df.columns.tolist())}",
                         extra_tags="students",
                     )
-                    return render(request, "AssSub/students.html", {"students": students})
+                    return render(
+                        request, "AssSub/students.html", {"students": students}
+                    )
 
             # Drop rows with missing IDs
             df = df.dropna(subset=["INDEX NUMBER"])
 
             if df.empty:
-                messages.error(request, "No valid student IDs found in the file.", extra_tags="students")
+                messages.error(
+                    request,
+                    "No valid student IDs found in the file.",
+                    extra_tags="students",
+                )
                 return render(request, "AssSub/students.html", {"students": students})
 
+            success_count = 0
             for _, row in df.iterrows():
-                PreApprovedStudents.objects.update_or_create(
-                    student_id=str(row["INDEX NUMBER"]).strip(),
-                    defaults={
-                        "name": str(row.get("NAME", "")).strip(),
-                        "email": str(row.get("EMAIL", "")).strip(),
-                    },
-                )
+                try:
+                    PreApprovedStudents.objects.update_or_create(
+                        student_id=str(row["INDEX NUMBER"]).strip(),
+                        defaults={
+                            "name": str(row.get("NAME", "")).strip(),
+                            "email": str(row.get("EMAIL", "")).strip(),
+                        },
+                    )
+                    success_count += 1
+                except Exception as e:
+                    print(f"Error processing row: {e}")
+                    continue
 
-            messages.success(request, "Students uploaded successfully!", extra_tags="students")
+            messages.success(
+                request,
+                f"Successfully uploaded {success_count} student(s)!",
+                extra_tags="students",
+            )
 
-        except ValueError:
+        except ValueError as e:
+            print(f"ValueError: {e}")
             messages.error(
                 request,
                 "Invalid file format. Please upload a valid Excel (.xlsx or .xls) file.",
                 extra_tags="students",
             )
-        except Exception:
+        except Exception as e:
+            print(f"Exception: {e}")
+            import traceback
+
+            traceback.print_exc()
             messages.error(
                 request,
-                "Something went wrong while processing your file. Please check the file and try again.",
+                f"Something went wrong while processing your file: {str(e)}",
                 extra_tags="students",
             )
 
         return render(request, "AssSub/students.html", {"students": students})
 
     return render(request, "AssSub/students.html", {"students": students})
-
 
 
 def upload_courses(request):
@@ -129,9 +156,18 @@ def check_id(request):
         context["student"] = student
         context["masked_email"] = mask_email(student.email)
 
-        if student.is_verified:
-            context["form_error"] = "Student already Verified. Please Login."
-            return render(request, "AssSub/register.html", context)
+        # if student.registration_stage == RegistrationStage.otp_verified:
+        #     context["form_error"] = "Student already Verified. Please Login."
+        #     return render(request, "AssSub/register.html", context)
+
+        print("Current registration stage:", student.registration_stage)
+        if student.registration_stage == "otp_verified":
+            context["form_error"] = "You're almost done setting up your account."
+            return render(request, "AssSub/register-final.html", context)
+
+        if student.is_verified or student.is_registered:
+            context["form_error"] = "Student already Registered. Please Login."
+            return render(request, "AssSub/login.html", context)
 
         if request.htmx:
             return render(request, "AssSub/register-2.html", context)
@@ -140,9 +176,9 @@ def check_id(request):
         context["form_error"] = "Invalid or Student ID not found"
 
         if request.htmx:
-            return render(request, "AssSub/register.html", context)
+            return render(request, "AssSub/base-register.html", context)
 
-    return render(request, "AssSub/register.html", context)
+    return render(request, "AssSub/base-register.html", context)
 
 
 # Python logic for display
@@ -159,8 +195,8 @@ import random
 
 
 def send_otp(request):
-    email = request.POST.get("email")
-    existing_email = request.POST.get("student_email")
+    email = request.POST.get("email").lower()
+    existing_email = request.POST.get("student_email").lower()
     student_id = request.POST.get("student_id")
     context = {}
 
@@ -189,7 +225,10 @@ def send_otp(request):
     email_message = EmailMultiAlternatives(subject, plain_message, to=[email])
     email_message.attach_alternative(html_message, "text/html")
     email_message.send()
-    return render(request, "AssSub/enter-otp.html", context)
+    student.registration_stage = "otp_sent"
+    student.save()
+    print("######### OTP sent ##########")
+    return render(request, "AssSub/register-3.html", context)
 
 
 def verify_otp(request):
@@ -209,21 +248,21 @@ def verify_otp(request):
 
     if not otp.isdigit() or len(otp) != 6:
         context["form_error"] = "Invalid OTP format"
-        return render(request, "AssSub/enter-otp.html", context)
+        return render(request, "AssSub/register-3.html", context)
 
     try:
         record = EmailOTP.objects.filter(email=email, otp=otp).latest("created_at")
     except EmailOTP.DoesNotExist:
         context["form_error"] = "Invalid OTP"
-        return render(request, "AssSub/enter-otp.html", context)
+        return render(request, "AssSub/register-3.html", context)
 
     if record.is_expired:
         context["form_error"] = "OTP expired"
-        return render(request, "AssSub/enter-otp.html", context)
+        return render(request, "AssSub/register-3.html", context)
 
     if record.is_verified:
         context["form_error"] = "The OTP has already been used"
-        return render(request, "AssSub/enter-otp.html", context)
+        return render(request, "AssSub/register-3.html", context)
 
     # OTP is valid
     record.is_verified = True
@@ -231,10 +270,12 @@ def verify_otp(request):
 
     student = context["student"]
     if student:
-        student.is_verified = True
+        # student.is_verified = True
+        student.registration_stage = "otp_verified"
+        print("######### OTP verified ##########")
         student.save()
 
-    return render(request, "AssSub/set-password.html", context)
+    return render(request, "AssSub/register-final.html", context)
 
 
 def set_password(request):
@@ -243,13 +284,27 @@ def set_password(request):
     email = request.POST.get("student_email")
     student_id = request.POST.get("student_id")
     context = {}
+    
+    try:
+        student = PreApprovedStudents.objects.get(student_id=student_id)
+        context["student"] = student
+    except PreApprovedStudents.DoesNotExist:
+        context["form_error"] = "Student not found"
+        return render(request, "AssSub/register-final.html", context)
 
     if password1 != password2:
-        context["form_error"] = "Password mismatch"
+        context["form_error"] = "Passwords do not match"
+        return render(request, "AssSub/register-final.html", context)
 
     user = User(student_id=student_id, email=email)
     user.set_password(password1)
     user.save()
+    
+    student.registration_stage = "completed"
+    student.is_registered = True
+    student.is_verified = True
+    student.save()
+    print("######### Registration completed ##########")
 
     return render(request, "AssSub/verified.html", context)
 
@@ -281,7 +336,7 @@ def register(request):
     else:
         form = RegistrationForm()
 
-    return render(request, "AssSub/base.html", {"form": form})
+    return render(request, "AssSub/base-register.html", {"form": form})
 
 
 def login(request):
@@ -409,7 +464,7 @@ def close_submission(request, submission_id):
 
 
 def index(request):
-    return render(request, "AssSub/redisgn1.html")
+    return render(request, "AssSub/landing.html")
 
 
 def download_submission_zip(request, submission_id):
@@ -456,7 +511,7 @@ def admin_dashboard(request, status=None):
 
     # Filter by status
     # if status == "active":
-    #     submissions = 
+    #     submissions =
     # elif status == "closed":
     #     submissions = submissions.filter(is_open=False)
 
@@ -520,13 +575,20 @@ def dashboard(request, status=None):
     for submission in submissions:
         submission.submission_data = submitted_map.get(submission.id)
         submission.has_submitted = submission.id in submitted_map
-        submission.submitted_at = submitted_map.get(submission.id).submitted_at if submission.has_submitted else None
-        
+        submission.submitted_at = (
+            submitted_map.get(submission.id).submitted_at
+            if submission.has_submitted
+            else None
+        )
+
     for open in open_submissions:
         open.has_submitted = open.id in submitted_map
-        open.submitted_at = submitted_map.get(open.id).submitted_at if open.has_submitted else None
-        open.submission_data = submitted_map.get(open.id) if open.has_submitted else None
-
+        open.submitted_at = (
+            submitted_map.get(open.id).submitted_at if open.has_submitted else None
+        )
+        open.submission_data = (
+            submitted_map.get(open.id) if open.has_submitted else None
+        )
 
     filter_param = status or request.GET.get("filter", "all")
 
@@ -559,10 +621,21 @@ def dashboard(request, status=None):
         },
     )
 
+
 def manage_students(request):
     students = PreApprovedStudents.objects.all()
     return render(request, "AssSub/students.html", {"students": students})
 
+
 def manage_courses(request):
     courses = Courses.objects.all()
     return render(request, "AssSub/courses.html", {"courses": courses})
+
+
+def delete_students(request):
+    if request.method == "GET":
+        PreApprovedStudents.objects.all().delete()
+        messages.success(
+            request, "All students have been deleted.", extra_tags="students"
+        )
+    return redirect("manage-students")
