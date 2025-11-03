@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-k%y5l!b(g_!ecj%zwu51u7^k1f-k+*^it!9g(%ai!3&h$)2lf&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['quetzal-keen-infinitely.ngrok-free.app', '127.0.0.1', 'localhost', '0.0.0.0', '13.50.112.211']
+ALLOWED_HOSTS = ['quetzal-keen-infinitely.ngrok-free.app', '127.0.0.1', 'localhost', '0.0.0.0', '13.50.112.211', 'assignmentsubmissioner-production.up.railway.app']
 CSRF_TRUSTED_ORIGINS = [
     "https://quetzal-keen-infinitely.ngrok-free.app",
     "http://localhost",
